@@ -45,7 +45,22 @@ A implementação será guiada pelo plano interno do projeto e deve usar:
 
 ## Como Executar Localmente
 
-Ainda não há aplicação executável neste repositório. Os comandos de instalação, desenvolvimento e build serão documentados aqui quando a base do app for criada.
+```bash
+npm install
+npm run dev
+```
+
+Para gerar a build de produção:
+
+```bash
+npm run build
+```
+
+Para visualizar a build localmente:
+
+```bash
+npm run preview
+```
 
 ## Estrutura do Projeto
 
@@ -54,6 +69,14 @@ Estrutura atual:
 ```text
 logo-qr-code-generator/
   README.md
+  package.json
+  index.html
+  vite.config.js
+  src/
+    App.jsx
+    main.jsx
+    styles/
+      global.css
 ```
 
 Esta seção acompanha apenas a estrutura pública real do projeto e será atualizada conforme arquivos e diretórios forem criados, removidos ou renomeados durante a implementação.
