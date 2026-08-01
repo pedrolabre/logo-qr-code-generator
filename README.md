@@ -75,6 +75,10 @@ logo-qr-code-generator/
   src/
     App.jsx
     main.jsx
+    types.js
+    lib/
+      contrast.js
+      linkDetection.js
     styles/
       global.css
 ```
