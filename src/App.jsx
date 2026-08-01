@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QRCodeConfigSchema, TEXT_POSITIONS, createInitialAppState } from './types';
+import { detectLinkType, getLinkTypeLabel, getSuggestedLinkTheme } from './lib/linkDetection';
 
 const buildFieldErrors = (config) => {
   const validationResult = QRCodeConfigSchema.safeParse(config);
@@ -49,11 +50,43 @@ export default function App() {
     return {
       ...initialState,
       errors: buildFieldErrors(initialState.config),
+      hasManualQrColorOverride: false,
     };
   });
 
   const updateValue = createValueUpdater(setAppState);
-  const { config, errors } = appState;
+  const { config, errors, hasManualQrColorOverride } = appState;
+
+  useEffect(() => {
+    const detectedLinkType = detectLinkType(config.url);
+    const suggestedTheme = getSuggestedLinkTheme(detectedLinkType);
+
+    setAppState((currentState) => {
+      const nextLinkType = detectedLinkType;
+      const nextQrColor = currentState.hasManualQrColorOverride
+        ? currentState.config.qrColor
+        : suggestedTheme.qrColor;
+
+      if (
+        currentState.config.linkType === nextLinkType &&
+        currentState.config.qrColor === nextQrColor
+      ) {
+        return currentState;
+      }
+
+      const nextConfig = {
+        ...currentState.config,
+        linkType: nextLinkType,
+        qrColor: nextQrColor,
+      };
+
+      return {
+        ...currentState,
+        config: nextConfig,
+        errors: buildFieldErrors(nextConfig),
+      };
+    });
+  }, [config.url]);
 
   const handleTextChange = (event) => {
     updateValue(event.currentTarget.name, event.currentTarget.value);
@@ -62,6 +95,30 @@ export default function App() {
   const handleRangeChange = (event) => {
     updateValue('logoScale', event.currentTarget.valueAsNumber);
   };
+
+  const handleQrColorChange = (event) => {
+    const nextQrColor = event.currentTarget.value;
+
+    setAppState((currentState) => {
+      const nextConfig = {
+        ...currentState.config,
+        qrColor: nextQrColor,
+      };
+
+      return {
+        ...currentState,
+        config: nextConfig,
+        errors: buildFieldErrors(nextConfig),
+        hasManualQrColorOverride: true,
+      };
+    });
+  };
+
+  const suggestedTheme = getSuggestedLinkTheme(config.linkType);
+  const linkTypeLabel = getLinkTypeLabel(config.linkType);
+  const qrColorSourceLabel = hasManualQrColorOverride
+    ? 'Override manual ativo'
+    : 'Cor sincronizada automaticamente';
 
   return (
     <main className="app-shell">
@@ -212,13 +269,14 @@ export default function App() {
                     name="qrColor"
                     type="color"
                     value={config.qrColor}
-                    onChange={handleTextChange}
+                    onChange={handleQrColorChange}
                     aria-invalid={Boolean(errors.qrColor)}
                     aria-describedby="qrColor-error"
                   />
                   <span className="text-input color-value">{config.qrColor.toUpperCase()}</span>
                 </div>
                 <FieldError fieldName="qrColor" error={errors.qrColor} />
+                <p className="form-hint">Sugestão atual: {suggestedTheme.qrColor.toUpperCase()}</p>
               </label>
 
               <label className="form-field color-field" htmlFor="bgColor">
@@ -343,6 +401,14 @@ export default function App() {
                         <dd>{formatLogoScale(config.logoScale)}</dd>
                       </div>
                       <div>
+                        <dt>Tipo detectado</dt>
+                        <dd>{linkTypeLabel}</dd>
+                      </div>
+                      <div>
+                        <dt>Cor sugerida</dt>
+                        <dd>{suggestedTheme.qrColor.toUpperCase()}</dd>
+                      </div>
+                      <div>
                         <dt>Texto</dt>
                         <dd>{config.textPosition === 'top' ? 'Topo' : 'Base'}</dd>
                       </div>
@@ -350,6 +416,7 @@ export default function App() {
 
                     <div className="preview-metrics" aria-hidden="true">
                       <span>{errors.url ? 'URL com ajuste pendente' : 'Validação inline ativa'}</span>
+                      <span>{qrColorSourceLabel}</span>
                       <span>QR real no próximo bloco</span>
                     </div>
                   </div>
