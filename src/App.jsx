@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { QRCodeConfigSchema, TEXT_POSITIONS, createInitialAppState } from './types';
+import { getContrastRatio, getReadableTextColor } from './lib/contrast';
 import { detectLinkType, getLinkTypeLabel, getSuggestedLinkTheme } from './lib/linkDetection';
 
 const buildFieldErrors = (config) => {
@@ -21,6 +22,35 @@ const buildFieldErrors = (config) => {
 };
 
 const formatLogoScale = (value) => `${Math.round(value * 100)}%`;
+
+const formatContrastRatio = (value) => `${value.toFixed(1)}:1`;
+
+const getContrastFeedback = (value) => {
+  if (value >= 4.5) {
+    return {
+      label: 'Contraste aprovado',
+      tone: 'good',
+      surface: 'rgba(22, 163, 74, 0.12)',
+      border: 'rgba(22, 163, 74, 0.28)',
+    };
+  }
+
+  if (value >= 3) {
+    return {
+      label: 'Contraste em atenção',
+      tone: 'warning',
+      surface: 'rgba(245, 158, 11, 0.14)',
+      border: 'rgba(245, 158, 11, 0.3)',
+    };
+  }
+
+  return {
+    label: 'Contraste baixo',
+    tone: 'danger',
+    surface: 'rgba(220, 38, 38, 0.14)',
+    border: 'rgba(220, 38, 38, 0.3)',
+  };
+};
 
 const createValueUpdater = (setAppState) => (fieldName, value) => {
   setAppState((currentState) => {
@@ -119,6 +149,43 @@ export default function App() {
   const qrColorSourceLabel = hasManualQrColorOverride
     ? 'Override manual ativo'
     : 'Cor sincronizada automaticamente';
+  const previewTextColor = getReadableTextColor(config.bgColor, {
+    lightColor: config.textColor,
+    darkColor: '#0f172a',
+  });
+  const textContrastRatio = getContrastRatio(previewTextColor, config.bgColor);
+  const qrContrastRatio = getContrastRatio(config.qrColor, config.bgColor);
+  const contrastFeedback = getContrastFeedback(textContrastRatio);
+  const qrFeedback = getContrastFeedback(qrContrastRatio);
+  const previewStyle = {
+    '--preview-bg': config.bgColor,
+    '--preview-accent': config.qrColor,
+    '--preview-eye': config.eyeColor || config.qrColor,
+    '--preview-text': previewTextColor,
+    '--preview-surface': contrastFeedback.surface,
+    '--preview-border': contrastFeedback.border,
+  };
+
+  const previewDetails = (
+    <dl className="preview-summary preview-summary-grid">
+      <div>
+        <dt>URL</dt>
+        <dd>{config.url}</dd>
+      </div>
+      <div>
+        <dt>Empresa</dt>
+        <dd>{config.companyName || 'Opcional'}</dd>
+      </div>
+      <div>
+        <dt>Tipo detectado</dt>
+        <dd>{linkTypeLabel}</dd>
+      </div>
+      <div>
+        <dt>Cor sugerida</dt>
+        <dd>{suggestedTheme.qrColor.toUpperCase()}</dd>
+      </div>
+    </dl>
+  );
 
   return (
     <main className="app-shell">
@@ -367,61 +434,79 @@ export default function App() {
           <section className="panel panel-preview" aria-labelledby="preview-title">
             <div className="panel-heading">
               <p className="panel-kicker">Estado</p>
-              <h2 id="preview-title">Resumo do formulário</h2>
+              <h2 id="preview-title">Preview funcional do card</h2>
             </div>
 
             <div className="preview-stage" aria-label="Resumo da configuração atual">
-              <div className="preview-card">
-                <div className="preview-badge">Preview base</div>
-                <div className="preview-grid preview-grid-form">
-                  <div className="preview-qr preview-qr-placeholder" aria-hidden="true">
-                    <span />
-                    <span />
-                    <span />
-                    <span />
+              <article className={`preview-card preview-card-${config.textPosition}`} style={previewStyle}>
+                <header className="preview-card-header">
+                  <div className="preview-card-heading">
+                    <span className="preview-badge">Preview base</span>
+                    <p className="preview-kicker">Texto em {config.textPosition === 'top' ? 'topo' : 'base'} com QR e logo reservados</p>
                   </div>
 
-                  <div className="preview-copy">
-                    <p className="preview-title">{config.title || 'Título do card ainda não definido'}</p>
-                    <p className="preview-text">
-                      {config.description || 'A descrição curta aparece aqui enquanto o formulário é preenchido.'}
-                    </p>
+                  <div className="preview-status-group" aria-label="Feedback visual do estado atual">
+                    <span className={`preview-status preview-status-${contrastFeedback.tone}`}>
+                      {contrastFeedback.label}
+                    </span>
+                    <span className={`preview-status preview-status-${qrFeedback.tone}`}>
+                      QR {formatContrastRatio(qrContrastRatio)} contra o fundo
+                    </span>
+                  </div>
+                </header>
 
-                    <dl className="preview-summary">
-                      <div>
-                        <dt>URL</dt>
-                        <dd>{config.url}</dd>
-                      </div>
-                      <div>
-                        <dt>Empresa</dt>
-                        <dd>{config.companyName || 'Opcional'}</dd>
-                      </div>
-                      <div>
-                        <dt>Escala</dt>
-                        <dd>{formatLogoScale(config.logoScale)}</dd>
-                      </div>
-                      <div>
-                        <dt>Tipo detectado</dt>
-                        <dd>{linkTypeLabel}</dd>
-                      </div>
-                      <div>
-                        <dt>Cor sugerida</dt>
-                        <dd>{suggestedTheme.qrColor.toUpperCase()}</dd>
-                      </div>
-                      <div>
-                        <dt>Texto</dt>
-                        <dd>{config.textPosition === 'top' ? 'Topo' : 'Base'}</dd>
-                      </div>
-                    </dl>
+                <div className="preview-card-body">
+                  {config.textPosition === 'top' && (
+                    <div className="preview-copy-card">
+                      <p className="preview-title">
+                        {config.title || 'Título do card ainda não definido'}
+                      </p>
+                      <p className="preview-text">
+                        {config.description || 'A descrição curta aparece aqui enquanto o formulário é preenchido.'}
+                      </p>
+                      {previewDetails}
+                    </div>
+                  )}
 
-                    <div className="preview-metrics" aria-hidden="true">
-                      <span>{errors.url ? 'URL com ajuste pendente' : 'Validação inline ativa'}</span>
-                      <span>{qrColorSourceLabel}</span>
-                      <span>QR real no próximo bloco</span>
+                  <div className="preview-visual">
+                    <div className="preview-visual-copy">
+                      <span className="preview-visual-label">Área central reservada</span>
+                      <strong>QR e logo ainda são placeholders</strong>
+                      <p>
+                        O card já exibe contraste, leitura e espaço físico para o QR real e para o logo SVG.
+                      </p>
+                    </div>
+
+                    <div className="preview-qr-shell" aria-hidden="true">
+                      <div className="preview-qr-frame">
+                        {Array.from({ length: 9 }, (_, index) => (
+                          <span key={index} />
+                        ))}
+                      </div>
+                      <div className="preview-logo-slot">{config.showIcon ? 'Logo SVG' : 'Logo oculto'}</div>
                     </div>
                   </div>
+
+                  {config.textPosition === 'bottom' && (
+                    <div className="preview-copy-card">
+                      <p className="preview-title">
+                        {config.title || 'Título do card ainda não definido'}
+                      </p>
+                      <p className="preview-text">
+                        {config.description || 'A descrição curta aparece aqui enquanto o formulário é preenchido.'}
+                      </p>
+                      {previewDetails}
+                    </div>
+                  )}
                 </div>
-              </div>
+
+                <footer className="preview-card-footer">
+                  <span>{config.textPosition === 'top' ? 'Conteúdo acima do QR' : 'Conteúdo abaixo do QR'}</span>
+                  <span>{formatLogoScale(config.logoScale)} de escala para o logo</span>
+                  <span>{errors.url ? 'URL com ajuste pendente' : 'Validação inline ativa'}</span>
+                  <span>{qrColorSourceLabel}</span>
+                </footer>
+              </article>
             </div>
           </section>
         </div>
