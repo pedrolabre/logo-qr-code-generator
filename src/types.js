@@ -9,22 +9,33 @@ const COLOR_FIELD_SCHEMA = z
   .trim()
   .regex(HEX_COLOR_PATTERN, { message: 'Cor hexadecimal invalida.' });
 
+const OPTIONAL_TEXT_FIELD_SCHEMA = (maxLength, message) =>
+  z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+    z.string().trim().max(maxLength, { message }).optional(),
+  );
+
+const OPTIONAL_COLOR_FIELD_SCHEMA = z.preprocess(
+  (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+  COLOR_FIELD_SCHEMA.optional(),
+);
+
 export const QRCodeConfigSchema = z.object({
   url: z
     .string()
     .trim()
     .min(1, { message: 'A URL de destino e obrigatoria.' })
     .url({ message: 'Insira um endereco web valido (ex: https://exemplo.com).' }),
-  companyName: z.string().trim().max(30, { message: 'O nome da empresa deve ter no maximo 30 caracteres.' }).optional(),
-  title: z.string().trim().max(40, { message: 'O titulo do card deve ter no maximo 40 caracteres.' }).optional(),
-  description: z.string().trim().max(50, { message: 'A descricao curta deve ter no maximo 50 caracteres.' }).optional(),
+  companyName: OPTIONAL_TEXT_FIELD_SCHEMA(30, 'O nome da empresa deve ter no maximo 30 caracteres.'),
+  title: OPTIONAL_TEXT_FIELD_SCHEMA(40, 'O titulo do card deve ter no maximo 40 caracteres.'),
+  description: OPTIONAL_TEXT_FIELD_SCHEMA(50, 'A descricao curta deve ter no maximo 50 caracteres.'),
   logoScale: z
     .number()
     .min(0.1, { message: 'A escala do logo deve ser de no minimo 10%.' })
     .max(0.25, { message: 'A escala maxima permitida no MVP e de 25%.' }),
   qrColor: COLOR_FIELD_SCHEMA,
   bgColor: COLOR_FIELD_SCHEMA,
-  eyeColor: COLOR_FIELD_SCHEMA.optional(),
+  eyeColor: OPTIONAL_COLOR_FIELD_SCHEMA,
   textColor: COLOR_FIELD_SCHEMA,
   textPosition: z.enum(TEXT_POSITIONS),
   showIcon: z.boolean(),
