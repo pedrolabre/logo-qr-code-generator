@@ -820,6 +820,15 @@ select {
   text-transform: uppercase;
 }
 
+.preview-logo-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 2.4rem;
+  max-height: 2.4rem;
+  object-fit: contain;
+}
+
 .preview-card-footer {
   display: flex;
   flex-wrap: wrap;

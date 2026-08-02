@@ -56,3 +56,50 @@ export const readAndSanitizeSvgFile = async (file) => {
 
   return sanitizeSvgMarkup(rawSvgMarkup);
 };
+
+export const normalizeSvgMarkup = (sanitizedMarkup) => {
+  if (typeof sanitizedMarkup !== 'string' || sanitizedMarkup.trim() === '') {
+    throw new Error('Markup SVG vazio ou invalido para normalizacao.');
+  }
+
+  const parser = new DOMParser();
+  const documentNode = parser.parseFromString(sanitizedMarkup, 'image/svg+xml');
+
+  if (documentNode.querySelector('parsererror')) {
+    throw new Error('Markup SVG com sintaxe XML invalida para normalizacao.');
+  }
+
+  const svgElement = documentNode.querySelector('svg');
+
+  if (!svgElement) {
+    throw new Error('Elemento <svg> nao encontrado no markup fornecido.');
+  }
+
+  const existingViewBox = svgElement.getAttribute('viewBox');
+  const widthAttr = svgElement.getAttribute('width');
+  const heightAttr = svgElement.getAttribute('height');
+
+  if (!existingViewBox && widthAttr && heightAttr) {
+    const numericWidth = parseFloat(widthAttr);
+    const numericHeight = parseFloat(heightAttr);
+
+    if (!Number.isNaN(numericWidth) && !Number.isNaN(numericHeight) && numericWidth > 0 && numericHeight > 0) {
+      svgElement.setAttribute('viewBox', `0 0 ${numericWidth} ${numericHeight}`);
+    }
+  }
+
+  svgElement.removeAttribute('width');
+  svgElement.removeAttribute('height');
+
+  return new XMLSerializer().serializeToString(documentNode);
+};
+
+export const svgMarkupToDataUrl = (normalizedMarkup) => {
+  if (typeof normalizedMarkup !== 'string' || normalizedMarkup.trim() === '') {
+    return null;
+  }
+
+  const encoded = btoa(unescape(encodeURIComponent(normalizedMarkup)));
+
+  return `data:image/svg+xml;base64,${encoded}`;
+};

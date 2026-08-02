@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { QRCodeConfigSchema, TEXT_POSITIONS, createInitialAppState } from './types';
 import { getContrastRatio, getReadableTextColor } from './lib/contrast';
 import { detectLinkType, getLinkTypeLabel, getSuggestedLinkTheme } from './lib/linkDetection';
-import { readAndSanitizeSvgFile } from './lib/svg';
+import { readAndSanitizeSvgFile, normalizeSvgMarkup, svgMarkupToDataUrl } from './lib/svg';
 
 const buildFieldErrors = (config) => {
   const validationResult = QRCodeConfigSchema.safeParse(config);
@@ -93,6 +93,20 @@ export default function App() {
   const updateValue = createValueUpdater(setAppState);
   const { config, errors, hasManualQrColorOverride } = appState;
 
+  const logoDataUrl = useMemo(() => {
+    if (!logoUploadState.sanitizedMarkup) {
+      return null;
+    }
+
+    try {
+      const normalizedMarkup = normalizeSvgMarkup(logoUploadState.sanitizedMarkup);
+
+      return svgMarkupToDataUrl(normalizedMarkup);
+    } catch {
+      return null;
+    }
+  }, [logoUploadState.sanitizedMarkup]);
+
   useEffect(() => {
     const detectedLinkType = detectLinkType(config.url);
     const suggestedTheme = getSuggestedLinkTheme(detectedLinkType);
@@ -180,8 +194,8 @@ export default function App() {
   const qrColorSourceLabel = hasManualQrColorOverride
     ? 'Override manual ativo'
     : 'Cor sincronizada automaticamente';
-  const logoUploadStatusLabel = logoUploadState.sanitizedMarkup
-    ? `SVG sanitizado carregado: ${logoUploadState.fileName}`
+  const logoUploadStatusLabel = logoDataUrl
+    ? `Logo normalizado: ${logoUploadState.fileName}`
     : 'Nenhum logo SVG carregado';
   const previewTextColor = getReadableTextColor(config.bgColor, {
     lightColor: config.textColor,
@@ -544,7 +558,17 @@ export default function App() {
                           <span key={index} />
                         ))}
                       </div>
-                      <div className="preview-logo-slot">{config.showIcon ? 'Logo SVG' : 'Logo oculto'}</div>
+                      <div className="preview-logo-slot">
+                        {logoDataUrl ? (
+                          <img
+                            className="preview-logo-image"
+                            src={logoDataUrl}
+                            alt="Logo normalizado"
+                          />
+                        ) : (
+                          config.showIcon ? 'Logo SVG' : 'Logo oculto'
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -564,7 +588,7 @@ export default function App() {
                 <footer className="preview-card-footer">
                   <span>{config.textPosition === 'top' ? 'Conteúdo acima do QR' : 'Conteúdo abaixo do QR'}</span>
                   <span>{formatLogoScale(config.logoScale)} de escala para o logo</span>
-                  <span>{logoUploadState.sanitizedMarkup ? 'SVG limpo em memória' : 'Upload SVG pendente'}</span>
+                  <span>{logoDataUrl ? 'Logo normalizado em memória' : 'Upload SVG pendente'}</span>
                   <span>{errors.url ? 'URL com ajuste pendente' : 'Validação inline ativa'}</span>
                   <span>{qrColorSourceLabel}</span>
                 </footer>
