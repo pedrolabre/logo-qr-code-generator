@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { QRCodeConfigSchema, TEXT_POSITIONS, createInitialAppState } from './types';
 import { getContrastRatio, getReadableTextColor } from './lib/contrast';
 import { detectLinkType, getLinkTypeLabel, getSuggestedLinkTheme } from './lib/linkDetection';
+import { readAndSanitizeSvgFile } from './lib/svg';
 
 const buildFieldErrors = (config) => {
   const validationResult = QRCodeConfigSchema.safeParse(config);
@@ -83,6 +84,11 @@ export default function App() {
       hasManualQrColorOverride: false,
     };
   });
+  const [logoUploadState, setLogoUploadState] = useState({
+    fileName: '',
+    sanitizedMarkup: null,
+    error: '',
+  });
 
   const updateValue = createValueUpdater(setAppState);
   const { config, errors, hasManualQrColorOverride } = appState;
@@ -126,6 +132,31 @@ export default function App() {
     updateValue('logoScale', event.currentTarget.valueAsNumber);
   };
 
+  const handleLogoUpload = async (event) => {
+    const file = event.currentTarget.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const sanitizedSvg = await readAndSanitizeSvgFile(file);
+
+      setLogoUploadState({
+        fileName: file.name,
+        sanitizedMarkup: sanitizedSvg,
+        error: '',
+      });
+    } catch (error) {
+      setLogoUploadState((currentState) => ({
+        ...currentState,
+        error: error instanceof Error ? error.message : 'Nao foi possivel processar o SVG enviado.',
+      }));
+    } finally {
+      event.currentTarget.value = '';
+    }
+  };
+
   const handleQrColorChange = (event) => {
     const nextQrColor = event.currentTarget.value;
 
@@ -149,6 +180,9 @@ export default function App() {
   const qrColorSourceLabel = hasManualQrColorOverride
     ? 'Override manual ativo'
     : 'Cor sincronizada automaticamente';
+  const logoUploadStatusLabel = logoUploadState.sanitizedMarkup
+    ? `SVG sanitizado carregado: ${logoUploadState.fileName}`
+    : 'Nenhum logo SVG carregado';
   const previewTextColor = getReadableTextColor(config.bgColor, {
     lightColor: config.textColor,
     darkColor: '#0f172a',
@@ -175,6 +209,10 @@ export default function App() {
       <div>
         <dt>Empresa</dt>
         <dd>{config.companyName || 'Opcional'}</dd>
+      </div>
+      <div>
+        <dt>Logo SVG</dt>
+        <dd>{logoUploadState.sanitizedMarkup ? logoUploadState.fileName : 'Aguardando upload'}</dd>
       </div>
       <div>
         <dt>Tipo detectado</dt>
@@ -318,6 +356,29 @@ export default function App() {
                   <span>25%</span>
                 </div>
                 <FieldError fieldName="logoScale" error={errors.logoScale} />
+              </div>
+
+              <div className="form-field field-span-2">
+                <div className="form-label-row">
+                  <span className="form-label">Logo SVG</span>
+                  <span className="form-hint">Apenas SVG limpo</span>
+                </div>
+                <input
+                  id="logoUpload"
+                  className="file-input"
+                  type="file"
+                  accept=".svg,image/svg+xml"
+                  onChange={handleLogoUpload}
+                  aria-invalid={Boolean(logoUploadState.error)}
+                  aria-describedby="logoUpload-help logoUpload-error"
+                />
+                <p className="form-hint" id="logoUpload-help">
+                  O arquivo e validado como SVG, tags perigosas sao removidas e erros nao quebram a tela.
+                </p>
+                <p className="form-error" id="logoUpload-error" aria-live="polite">
+                  {logoUploadState.error || ' '}
+                </p>
+                <p className="upload-status">{logoUploadStatusLabel}</p>
               </div>
 
               <div className="field-span-2 form-subheading">
@@ -503,6 +564,7 @@ export default function App() {
                 <footer className="preview-card-footer">
                   <span>{config.textPosition === 'top' ? 'Conteúdo acima do QR' : 'Conteúdo abaixo do QR'}</span>
                   <span>{formatLogoScale(config.logoScale)} de escala para o logo</span>
+                  <span>{logoUploadState.sanitizedMarkup ? 'SVG limpo em memória' : 'Upload SVG pendente'}</span>
                   <span>{errors.url ? 'URL com ajuste pendente' : 'Validação inline ativa'}</span>
                   <span>{qrColorSourceLabel}</span>
                 </footer>

@@ -259,6 +259,7 @@ select {
 
 .text-input,
 .range-input,
+.file-input,
 .color-control input {
   width: 100%;
   min-width: 0;
@@ -291,6 +292,37 @@ select {
 .text-area {
   resize: vertical;
   min-height: 6rem;
+}
+
+.file-input {
+  min-height: 2.3rem;
+  padding: 0.45rem;
+  border: 1px dashed rgba(15, 23, 42, 0.24);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-muted);
+}
+
+.file-input::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(11, 95, 255, 0.22);
+  background: rgba(11, 95, 255, 0.08);
+  color: var(--color-accent-strong);
+  font: inherit;
+  font-size: 0.66rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.file-input::file-selector-button:hover {
+  background: rgba(11, 95, 255, 0.12);
+}
+
+.upload-status {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.58rem;
+  line-height: 1.25;
 }
 
 .range-input {
