@@ -68,11 +68,17 @@ const createValueUpdater = (setAppState) => (fieldName, value) => {
   });
 };
 
-const FieldError = ({ fieldName, error }) => (
-  <p className="form-error" id={`${fieldName}-error`} aria-live="polite">
-    {error || ' '}
-  </p>
-);
+const FieldError = ({ fieldName, error }) => {
+  if (!error) {
+    return null;
+  }
+
+  return (
+    <p className="form-error" id={`${fieldName}-error`} aria-live="polite">
+      {error}
+    </p>
+  );
+};
 
 export default function App() {
   const [appState, setAppState] = useState(() => {
@@ -246,29 +252,18 @@ export default function App() {
 
       <section className="app-frame" aria-labelledby="hero-title">
         <header className="app-header">
-          <div>
-            <p className="eyebrow">Logo QR Code Generator</p>
-            <h1 id="hero-title">QR Codes com identidade de marca.</h1>
+          <p className="eyebrow">Logo QR Code Generator</p>
+          <h1 id="hero-title">QR Codes com identidade de marca.</h1>
+
+          <div className="status-row" aria-label="Estado atual da aplicação">
+            <span className="status-chip">Entrada unificada</span>
+            <span className="status-chip">Validação em tempo real</span>
+            <span className="status-chip">Preview</span>
           </div>
-
-          <p className="lead">
-            Formulário principal com estado unico, validacao inline e base pronta para o preview.
-          </p>
         </header>
-
-        <div className="status-row" aria-label="Estado atual da aplicação">
-          <span className="status-chip">Entrada unificada</span>
-          <span className="status-chip">Validação em tempo real</span>
-          <span className="status-chip">Preview no próximo bloco</span>
-        </div>
 
         <div className="layout-grid">
           <section className="panel panel-controls form-panel" aria-labelledby="controls-title">
-            <div className="panel-heading">
-              <p className="panel-kicker">Controles</p>
-              <h2 id="controls-title">Formulario principal</h2>
-            </div>
-
             <form className="form-grid" noValidate>
               <label className="form-field field-span-2" htmlFor="url">
                 <div className="form-label-row">
@@ -389,97 +384,87 @@ export default function App() {
                 <p className="form-hint" id="logoUpload-help">
                   O arquivo e validado como SVG, tags perigosas sao removidas e erros nao quebram a tela.
                 </p>
-                <p className="form-error" id="logoUpload-error" aria-live="polite">
-                  {logoUploadState.error || ' '}
-                </p>
+                {logoUploadState.error && (
+                  <p className="form-error" id="logoUpload-error" aria-live="polite">
+                    {logoUploadState.error}
+                  </p>
+                )}
                 <p className="upload-status">{logoUploadStatusLabel}</p>
               </div>
 
               <div className="field-span-2 form-subheading">
-                <p>Cores base</p>
-                <span>Defina o tom principal do QR, do fundo e do texto agora.</span>
+                <p>Cores</p>
               </div>
 
-              <label className="form-field color-field" htmlFor="qrColor">
-                <div className="form-label-row">
-                  <span className="form-label">Cor do QR</span>
-                  <span className="form-hint">Hexadecimal</span>
-                </div>
-                <div className="color-control">
-                  <input
-                    id="qrColor"
-                    name="qrColor"
-                    type="color"
-                    value={config.qrColor}
-                    onChange={handleQrColorChange}
-                    aria-invalid={Boolean(errors.qrColor)}
-                    aria-describedby="qrColor-error"
-                  />
-                  <span className="text-input color-value">{config.qrColor.toUpperCase()}</span>
-                </div>
-                <FieldError fieldName="qrColor" error={errors.qrColor} />
-                <p className="form-hint">Sugestão atual: {suggestedTheme.qrColor.toUpperCase()}</p>
-              </label>
+              <div className="field-span-2 color-grid">
+                <label className="form-field color-field" htmlFor="qrColor">
+                  <span className="form-label">QR</span>
+                  <div className="color-control">
+                    <input
+                      id="qrColor"
+                      name="qrColor"
+                      type="color"
+                      value={config.qrColor}
+                      onChange={handleQrColorChange}
+                      aria-invalid={Boolean(errors.qrColor)}
+                      aria-describedby="qrColor-error"
+                    />
+                    <span className="text-input color-value">{config.qrColor.toUpperCase()}</span>
+                  </div>
+                  <FieldError fieldName="qrColor" error={errors.qrColor} />
+                </label>
 
-              <label className="form-field color-field" htmlFor="bgColor">
-                <div className="form-label-row">
-                  <span className="form-label">Cor de fundo</span>
-                  <span className="form-hint">Hexadecimal</span>
-                </div>
-                <div className="color-control">
-                  <input
-                    id="bgColor"
-                    name="bgColor"
-                    type="color"
-                    value={config.bgColor}
-                    onChange={handleTextChange}
-                    aria-invalid={Boolean(errors.bgColor)}
-                    aria-describedby="bgColor-error"
-                  />
-                  <span className="text-input color-value">{config.bgColor.toUpperCase()}</span>
-                </div>
-                <FieldError fieldName="bgColor" error={errors.bgColor} />
-              </label>
+                <label className="form-field color-field" htmlFor="bgColor">
+                  <span className="form-label">Fundo</span>
+                  <div className="color-control">
+                    <input
+                      id="bgColor"
+                      name="bgColor"
+                      type="color"
+                      value={config.bgColor}
+                      onChange={handleTextChange}
+                      aria-invalid={Boolean(errors.bgColor)}
+                      aria-describedby="bgColor-error"
+                    />
+                    <span className="text-input color-value">{config.bgColor.toUpperCase()}</span>
+                  </div>
+                  <FieldError fieldName="bgColor" error={errors.bgColor} />
+                </label>
 
-              <label className="form-field color-field" htmlFor="eyeColor">
-                <div className="form-label-row">
-                  <span className="form-label">Cor dos olhos</span>
-                  <span className="form-hint">Opcional</span>
-                </div>
-                <div className="color-control">
-                  <input
-                    id="eyeColor"
-                    name="eyeColor"
-                    type="color"
-                    value={config.eyeColor}
-                    onChange={handleTextChange}
-                    aria-invalid={Boolean(errors.eyeColor)}
-                    aria-describedby="eyeColor-error"
-                  />
-                  <span className="text-input color-value">{config.eyeColor.toUpperCase()}</span>
-                </div>
-                <FieldError fieldName="eyeColor" error={errors.eyeColor} />
-              </label>
+                <label className="form-field color-field" htmlFor="eyeColor">
+                  <span className="form-label">Olhos</span>
+                  <div className="color-control">
+                    <input
+                      id="eyeColor"
+                      name="eyeColor"
+                      type="color"
+                      value={config.eyeColor}
+                      onChange={handleTextChange}
+                      aria-invalid={Boolean(errors.eyeColor)}
+                      aria-describedby="eyeColor-error"
+                    />
+                    <span className="text-input color-value">{config.eyeColor.toUpperCase()}</span>
+                  </div>
+                  <FieldError fieldName="eyeColor" error={errors.eyeColor} />
+                </label>
 
-              <label className="form-field color-field" htmlFor="textColor">
-                <div className="form-label-row">
-                  <span className="form-label">Cor do texto</span>
-                  <span className="form-hint">Hexadecimal</span>
-                </div>
-                <div className="color-control">
-                  <input
-                    id="textColor"
-                    name="textColor"
-                    type="color"
-                    value={config.textColor}
-                    onChange={handleTextChange}
-                    aria-invalid={Boolean(errors.textColor)}
-                    aria-describedby="textColor-error"
-                  />
-                  <span className="text-input color-value">{config.textColor.toUpperCase()}</span>
-                </div>
-                <FieldError fieldName="textColor" error={errors.textColor} />
-              </label>
+                <label className="form-field color-field" htmlFor="textColor">
+                  <span className="form-label">Texto</span>
+                  <div className="color-control">
+                    <input
+                      id="textColor"
+                      name="textColor"
+                      type="color"
+                      value={config.textColor}
+                      onChange={handleTextChange}
+                      aria-invalid={Boolean(errors.textColor)}
+                      aria-describedby="textColor-error"
+                    />
+                    <span className="text-input color-value">{config.textColor.toUpperCase()}</span>
+                  </div>
+                  <FieldError fieldName="textColor" error={errors.textColor} />
+                </label>
+              </div>
 
               <label className="form-field field-span-2" htmlFor="textPosition">
                 <div className="form-label-row">
@@ -507,51 +492,22 @@ export default function App() {
           </section>
 
           <section className="panel panel-preview" aria-labelledby="preview-title">
-            <div className="panel-heading">
-              <p className="panel-kicker">Estado</p>
-              <h2 id="preview-title">Preview funcional do card</h2>
-            </div>
-
             <div className="preview-stage" aria-label="Resumo da configuração atual">
               <article className={`preview-card preview-card-${config.textPosition}`} style={previewStyle}>
                 <header className="preview-card-header">
-                  <div className="preview-card-heading">
-                    <span className="preview-badge">Preview base</span>
-                    <p className="preview-kicker">Texto em {config.textPosition === 'top' ? 'topo' : 'base'} com QR e logo reservados</p>
-                  </div>
-
+                  <span className="preview-badge">Preview</span>
                   <div className="preview-status-group" aria-label="Feedback visual do estado atual">
                     <span className={`preview-status preview-status-${contrastFeedback.tone}`}>
                       {contrastFeedback.label}
                     </span>
                     <span className={`preview-status preview-status-${qrFeedback.tone}`}>
-                      QR {formatContrastRatio(qrContrastRatio)} contra o fundo
+                      QR {formatContrastRatio(qrContrastRatio)}
                     </span>
                   </div>
                 </header>
 
                 <div className="preview-card-body">
-                  {config.textPosition === 'top' && (
-                    <div className="preview-copy-card">
-                      <p className="preview-title">
-                        {config.title || 'Título do card ainda não definido'}
-                      </p>
-                      <p className="preview-text">
-                        {config.description || 'A descrição curta aparece aqui enquanto o formulário é preenchido.'}
-                      </p>
-                      {previewDetails}
-                    </div>
-                  )}
-
                   <div className="preview-visual">
-                    <div className="preview-visual-copy">
-                      <span className="preview-visual-label">Área central reservada</span>
-                      <strong>QR e logo ainda são placeholders</strong>
-                      <p>
-                        O card já exibe contraste, leitura e espaço físico para o QR real e para o logo SVG.
-                      </p>
-                    </div>
-
                     <div className="preview-qr-shell" aria-hidden="true">
                       <div className="preview-qr-frame">
                         {Array.from({ length: 9 }, (_, index) => (
@@ -572,24 +528,20 @@ export default function App() {
                     </div>
                   </div>
 
-                  {config.textPosition === 'bottom' && (
-                    <div className="preview-copy-card">
-                      <p className="preview-title">
-                        {config.title || 'Título do card ainda não definido'}
-                      </p>
-                      <p className="preview-text">
-                        {config.description || 'A descrição curta aparece aqui enquanto o formulário é preenchido.'}
-                      </p>
-                      {previewDetails}
-                    </div>
-                  )}
+                  <div className="preview-copy-card">
+                    <p className="preview-title">
+                      {config.title || 'Título do card ainda não definido'}
+                    </p>
+                    <p className="preview-text">
+                      {config.description || 'A descrição curta aparece aqui enquanto o formulário é preenchido.'}
+                    </p>
+                    {previewDetails}
+                  </div>
                 </div>
 
                 <footer className="preview-card-footer">
-                  <span>{config.textPosition === 'top' ? 'Conteúdo acima do QR' : 'Conteúdo abaixo do QR'}</span>
-                  <span>{formatLogoScale(config.logoScale)} de escala para o logo</span>
-                  <span>{logoDataUrl ? 'Logo normalizado em memória' : 'Upload SVG pendente'}</span>
-                  <span>{errors.url ? 'URL com ajuste pendente' : 'Validação inline ativa'}</span>
+                  <span>{formatLogoScale(config.logoScale)} escala</span>
+                  <span>{logoDataUrl ? 'Logo pronto' : 'SVG pendente'}</span>
                   <span>{qrColorSourceLabel}</span>
                 </footer>
               </article>
