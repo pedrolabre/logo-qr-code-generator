@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { QRCodeConfigSchema, TEXT_POSITIONS, createInitialAppState } from './types';
 import { getContrastRatio, getReadableTextColor } from './lib/contrast';
 import { detectLinkType, getLinkTypeLabel, getSuggestedLinkTheme } from './lib/linkDetection';
 import { readAndSanitizeSvgFile, normalizeSvgMarkup, svgMarkupToDataUrl } from './lib/svg';
+import { createQRCodeInstance, buildQRCodeOptions } from './lib/qr';
 
 const buildFieldErrors = (config) => {
   const validationResult = QRCodeConfigSchema.safeParse(config);
@@ -112,6 +113,37 @@ export default function App() {
       return null;
     }
   }, [logoUploadState.sanitizedMarkup]);
+
+  const qrContainerRef = useRef(null);
+  const qrInstanceRef = useRef(null);
+
+  useEffect(() => {
+    const instance = createQRCodeInstance(config, logoDataUrl);
+
+    qrInstanceRef.current = instance;
+
+    if (qrContainerRef.current) {
+      instance.append(qrContainerRef.current);
+    }
+
+    return () => {
+      qrInstanceRef.current = null;
+
+      if (qrContainerRef.current) {
+        qrContainerRef.current.innerHTML = '';
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!qrInstanceRef.current) {
+      return;
+    }
+
+    const nextOptions = buildQRCodeOptions(config, logoDataUrl);
+
+    qrInstanceRef.current.update(nextOptions);
+  }, [config, logoDataUrl]);
 
   useEffect(() => {
     const detectedLinkType = detectLinkType(config.url);
@@ -508,24 +540,7 @@ export default function App() {
 
                 <div className="preview-card-body">
                   <div className="preview-visual">
-                    <div className="preview-qr-shell" aria-hidden="true">
-                      <div className="preview-qr-frame">
-                        {Array.from({ length: 9 }, (_, index) => (
-                          <span key={index} />
-                        ))}
-                      </div>
-                      <div className="preview-logo-slot">
-                        {logoDataUrl ? (
-                          <img
-                            className="preview-logo-image"
-                            src={logoDataUrl}
-                            alt="Logo normalizado"
-                          />
-                        ) : (
-                          config.showIcon ? 'Logo SVG' : 'Logo oculto'
-                        )}
-                      </div>
-                    </div>
+                    <div className="preview-qr-mount" ref={qrContainerRef} />
                   </div>
 
                   <div className="preview-copy-card">

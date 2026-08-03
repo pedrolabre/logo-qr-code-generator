@@ -79,6 +79,7 @@ logo-qr-code-generator/
     lib/
       contrast.js
       linkDetection.js
+      qr.js
       svg.js
     styles/
       global.css
