@@ -818,6 +818,124 @@ select {
   opacity: 0.7;
 }
 
+.scannability-alert {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid rgba(220, 38, 38, 0.28);
+  background: rgba(220, 38, 38, 0.08);
+  margin-top: 0.25rem;
+}
+
+.scannability-alert-icon {
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.scannability-alert-content {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.scannability-alert-title {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #991b1b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.scannability-alert-message {
+  margin: 0;
+  font-size: 0.62rem;
+  line-height: 1.3;
+  color: #7f1d1d;
+}
+
+.actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  padding-top: 0.35rem;
+  margin-top: 0.15rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.9rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid transparent;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease-out, border-color 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+.action-button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.action-button-primary {
+  border-color: rgba(11, 95, 255, 0.28);
+  background: rgba(11, 95, 255, 0.1);
+  color: var(--color-accent-strong);
+}
+
+.action-button-primary:not(:disabled):hover {
+  background: rgba(11, 95, 255, 0.18);
+  border-color: rgba(11, 95, 255, 0.4);
+}
+
+.action-button-secondary {
+  border-color: rgba(15, 23, 42, 0.14);
+  background: rgba(15, 23, 42, 0.04);
+  color: var(--color-text);
+}
+
+.action-button-secondary:not(:disabled):hover {
+  background: rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 23, 42, 0.22);
+}
+
+.scannability-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.54rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scannability-badge-safe {
+  border: 1px solid rgba(22, 163, 74, 0.26);
+  background: rgba(22, 163, 74, 0.12);
+  color: #166534;
+}
+
+.scannability-badge-acceptable {
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.14);
+  color: #92400e;
+}
+
+.scannability-badge-blocked {
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  background: rgba(220, 38, 38, 0.12);
+  color: #991b1b;
+}
+
 @media (max-width: 960px) {
   .layout-grid {
     grid-template-columns: 1fr;

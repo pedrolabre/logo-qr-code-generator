@@ -91,3 +91,59 @@ export const getReadableTextColor = (
 
   return lightColorRatio >= darkColorRatio ? lightColor : darkColor;
 };
+
+export const QR_MIN_CONTRAST_RATIO = 3.0;
+
+export const getContrastFeedback = (value) => {
+  if (value >= 4.5) {
+    return {
+      label: 'Contraste aprovado',
+      tone: 'good',
+      surface: 'rgba(22, 163, 74, 0.12)',
+      border: 'rgba(22, 163, 74, 0.28)',
+    };
+  }
+
+  if (value >= QR_MIN_CONTRAST_RATIO) {
+    return {
+      label: 'Contraste em atenção',
+      tone: 'warning',
+      surface: 'rgba(245, 158, 11, 0.14)',
+      border: 'rgba(245, 158, 11, 0.3)',
+    };
+  }
+
+  return {
+    label: 'Contraste baixo',
+    tone: 'danger',
+    surface: 'rgba(220, 38, 38, 0.14)',
+    border: 'rgba(220, 38, 38, 0.3)',
+  };
+};
+
+export const getScannabilityStatus = (qrContrastRatio) => {
+  if (qrContrastRatio >= 4.5) {
+    return {
+      level: 'safe',
+      label: 'Leitura segura',
+      message: 'O contraste entre o QR e o fundo garante leitura estável na maioria dos leitores.',
+      canExport: true,
+    };
+  }
+
+  if (qrContrastRatio >= QR_MIN_CONTRAST_RATIO) {
+    return {
+      level: 'acceptable',
+      label: 'Leitura aceitável',
+      message: 'O contraste está dentro do limite mínimo. Teste a leitura antes de imprimir.',
+      canExport: true,
+    };
+  }
+
+  return {
+    level: 'blocked',
+    label: 'Leitura comprometida',
+    message: 'O contraste entre a cor do código e o fundo é muito baixo. O QR Code pode falhar na leitura.',
+    canExport: false,
+  };
+};

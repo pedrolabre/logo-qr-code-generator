@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { QRCodeConfigSchema, TEXT_POSITIONS, createInitialAppState } from './types';
-import { getContrastRatio, getReadableTextColor } from './lib/contrast';
+import { getContrastRatio, getContrastFeedback, getReadableTextColor, getScannabilityStatus } from './lib/contrast';
 import { detectLinkType, getLinkTypeLabel, getSuggestedLinkTheme } from './lib/linkDetection';
 import { readAndSanitizeSvgFile, normalizeSvgMarkup, svgMarkupToDataUrl } from './lib/svg';
 import { createQRCodeInstance, buildQRCodeOptions } from './lib/qr';
@@ -26,33 +26,6 @@ const buildFieldErrors = (config) => {
 const formatLogoScale = (value) => `${Math.round(value * 100)}%`;
 
 const formatContrastRatio = (value) => `${value.toFixed(1)}:1`;
-
-const getContrastFeedback = (value) => {
-  if (value >= 4.5) {
-    return {
-      label: 'Contraste aprovado',
-      tone: 'good',
-      surface: 'rgba(22, 163, 74, 0.12)',
-      border: 'rgba(22, 163, 74, 0.28)',
-    };
-  }
-
-  if (value >= 3) {
-    return {
-      label: 'Contraste em atenção',
-      tone: 'warning',
-      surface: 'rgba(245, 158, 11, 0.14)',
-      border: 'rgba(245, 158, 11, 0.3)',
-    };
-  }
-
-  return {
-    label: 'Contraste baixo',
-    tone: 'danger',
-    surface: 'rgba(220, 38, 38, 0.14)',
-    border: 'rgba(220, 38, 38, 0.3)',
-  };
-};
 
 const createValueUpdater = (setAppState) => (fieldName, value) => {
   setAppState((currentState) => {
@@ -243,6 +216,8 @@ export default function App() {
   const qrContrastRatio = getContrastRatio(config.qrColor, config.bgColor);
   const contrastFeedback = getContrastFeedback(textContrastRatio);
   const qrFeedback = getContrastFeedback(qrContrastRatio);
+  const scannability = getScannabilityStatus(qrContrastRatio);
+  const canExport = scannability.canExport;
   const previewStyle = {
     '--preview-bg': config.bgColor,
     '--preview-accent': config.qrColor,
@@ -560,6 +535,40 @@ export default function App() {
                   <span>{qrColorSourceLabel}</span>
                 </footer>
               </article>
+
+              {!canExport && (
+                <div className="scannability-alert" role="alert">
+                  <span className="scannability-alert-icon" aria-hidden="true">⚠</span>
+                  <div className="scannability-alert-content">
+                    <strong className="scannability-alert-title">{scannability.label}</strong>
+                    <p className="scannability-alert-message">{scannability.message}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="actions-bar" aria-label="Ações de exportação">
+                <button
+                  type="button"
+                  className="action-button action-button-primary"
+                  disabled={!canExport}
+                  aria-disabled={!canExport}
+                  title={canExport ? 'Exportar QR Code' : 'Corrija o contraste para exportar'}
+                >
+                  Exportar QR
+                </button>
+                <button
+                  type="button"
+                  className="action-button action-button-secondary"
+                  disabled={!canExport}
+                  aria-disabled={!canExport}
+                  title={canExport ? 'Exportar card completo' : 'Corrija o contraste para exportar'}
+                >
+                  Exportar Card
+                </button>
+                <span className={`scannability-badge scannability-badge-${scannability.level}`}>
+                  {scannability.label}
+                </span>
+              </div>
             </div>
           </section>
         </div>
