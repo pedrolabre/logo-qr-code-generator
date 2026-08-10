@@ -936,6 +936,17 @@ select {
   color: #991b1b;
 }
 
+.export-error {
+  margin: 0.25rem 0 0;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid rgba(220, 38, 38, 0.24);
+  background: rgba(220, 38, 38, 0.06);
+  color: #991b1b;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
 @media (max-width: 960px) {
   .layout-grid {
     grid-template-columns: 1fr;

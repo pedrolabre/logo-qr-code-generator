@@ -57,3 +57,34 @@ export const createQRCodeInstance = (config, logoDataUrl) => {
     ...dynamicOptions,
   });
 };
+
+const buildExportFileName = (extension) => {
+  const timestamp = Date.now();
+
+  return `qr-code-${timestamp}.${extension}`;
+};
+
+export const downloadQRCode = async (qrInstance, extension) => {
+  if (!qrInstance) {
+    throw new Error('Instância do QR Code não disponível para exportação.');
+  }
+
+  const validExtensions = ['svg', 'png'];
+
+  if (!validExtensions.includes(extension)) {
+    throw new Error(`Formato de exportação "${extension}" não suportado.`);
+  }
+
+  const fileName = buildExportFileName(extension);
+
+  try {
+    await qrInstance.download({
+      extension,
+      name: fileName.replace(`.${extension}`, ''),
+    });
+  } catch (error) {
+    console.error('Erro ao exportar QR Code:', error);
+
+    throw new Error('Não foi possível exportar o QR Code. Tente novamente.');
+  }
+};

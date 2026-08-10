@@ -3,7 +3,7 @@ import { QRCodeConfigSchema, TEXT_POSITIONS, createInitialAppState } from './typ
 import { getContrastRatio, getContrastFeedback, getReadableTextColor, getScannabilityStatus } from './lib/contrast';
 import { detectLinkType, getLinkTypeLabel, getSuggestedLinkTheme } from './lib/linkDetection';
 import { readAndSanitizeSvgFile, normalizeSvgMarkup, svgMarkupToDataUrl } from './lib/svg';
-import { createQRCodeInstance, buildQRCodeOptions } from './lib/qr';
+import { createQRCodeInstance, buildQRCodeOptions, downloadQRCode } from './lib/qr';
 
 const buildFieldErrors = (config) => {
   const validationResult = QRCodeConfigSchema.safeParse(config);
@@ -69,6 +69,8 @@ export default function App() {
     sanitizedMarkup: null,
     error: '',
   });
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState('');
 
   const updateValue = createValueUpdater(setAppState);
   const { config, errors, hasManualQrColorOverride } = appState;
@@ -198,6 +200,27 @@ export default function App() {
         hasManualQrColorOverride: true,
       };
     });
+  };
+
+  const handleExportQR = async (extension) => {
+    if (!canExport || isExporting || !qrInstanceRef.current) {
+      return;
+    }
+
+    setIsExporting(true);
+    setExportError('');
+
+    try {
+      await downloadQRCode(qrInstanceRef.current, extension);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao exportar.';
+
+      setExportError(message);
+
+      setTimeout(() => setExportError(''), 5000);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const suggestedTheme = getSuggestedLinkTheme(config.linkType);
@@ -550,11 +573,22 @@ export default function App() {
                 <button
                   type="button"
                   className="action-button action-button-primary"
-                  disabled={!canExport}
-                  aria-disabled={!canExport}
-                  title={canExport ? 'Exportar QR Code' : 'Corrija o contraste para exportar'}
+                  disabled={!canExport || isExporting}
+                  aria-disabled={!canExport || isExporting}
+                  title={canExport ? 'Exportar QR em SVG' : 'Corrija o contraste para exportar'}
+                  onClick={() => handleExportQR('svg')}
                 >
-                  Exportar QR
+                  {isExporting ? 'Exportando…' : 'Exportar SVG'}
+                </button>
+                <button
+                  type="button"
+                  className="action-button action-button-primary"
+                  disabled={!canExport || isExporting}
+                  aria-disabled={!canExport || isExporting}
+                  title={canExport ? 'Exportar QR em PNG' : 'Corrija o contraste para exportar'}
+                  onClick={() => handleExportQR('png')}
+                >
+                  {isExporting ? 'Exportando…' : 'Exportar PNG'}
                 </button>
                 <button
                   type="button"
@@ -569,6 +603,11 @@ export default function App() {
                   {scannability.label}
                 </span>
               </div>
+              {exportError && (
+                <p className="export-error" role="alert">
+                  {exportError}
+                </p>
+              )}
             </div>
           </section>
         </div>
