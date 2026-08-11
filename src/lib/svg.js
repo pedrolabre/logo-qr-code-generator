@@ -14,20 +14,20 @@ export const isSvgFile = (file) => {
 
 export const sanitizeSvgMarkup = (rawSvgMarkup) => {
   if (typeof rawSvgMarkup !== 'string' || rawSvgMarkup.trim() === '') {
-    throw new Error('Envie um arquivo SVG valido.');
+    throw new Error('Envie um SVG válido para usar como logo.');
   }
 
   const parser = new DOMParser();
   const documentNode = parser.parseFromString(rawSvgMarkup, 'image/svg+xml');
 
   if (documentNode.querySelector('parsererror')) {
-    throw new Error('Arquivo SVG com sintaxe XML invalida.');
+    throw new Error('Não consegui ler esse SVG. Exporte novamente e tente de novo.');
   }
 
   const svgElement = documentNode.querySelector('svg');
 
   if (!svgElement) {
-    throw new Error('O arquivo enviado nao contem um elemento <svg>.');
+    throw new Error('O arquivo precisa conter uma tag <svg>.');
   }
 
   for (const tagName of FORBIDDEN_TAG_NAMES) {
@@ -49,7 +49,7 @@ export const sanitizeSvgMarkup = (rawSvgMarkup) => {
 
 export const readAndSanitizeSvgFile = async (file) => {
   if (!isSvgFile(file)) {
-    throw new Error('Envie apenas arquivos SVG.');
+    throw new Error('Escolha um arquivo .svg para usar como logo.');
   }
 
   const rawSvgMarkup = await file.text();
@@ -59,20 +59,20 @@ export const readAndSanitizeSvgFile = async (file) => {
 
 export const normalizeSvgMarkup = (sanitizedMarkup) => {
   if (typeof sanitizedMarkup !== 'string' || sanitizedMarkup.trim() === '') {
-    throw new Error('Markup SVG vazio ou invalido para normalizacao.');
+    throw new Error('O SVG está vazio depois da validação.');
   }
 
   const parser = new DOMParser();
   const documentNode = parser.parseFromString(sanitizedMarkup, 'image/svg+xml');
 
   if (documentNode.querySelector('parsererror')) {
-    throw new Error('Markup SVG com sintaxe XML invalida para normalizacao.');
+    throw new Error('O SVG validado não pôde ser normalizado.');
   }
 
   const svgElement = documentNode.querySelector('svg');
 
   if (!svgElement) {
-    throw new Error('Elemento <svg> nao encontrado no markup fornecido.');
+    throw new Error('O SVG validado não contém uma tag <svg>.');
   }
 
   const existingViewBox = svgElement.getAttribute('viewBox');

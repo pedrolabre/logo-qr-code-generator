@@ -178,7 +178,7 @@ export default function App() {
     } catch (error) {
       setLogoUploadState((currentState) => ({
         ...currentState,
-        error: error instanceof Error ? error.message : 'Nao foi possivel processar o SVG enviado.',
+        error: error instanceof Error ? error.message : 'Não foi possível processar esse SVG. Tente outro arquivo.',
       }));
     } finally {
       event.currentTarget.value = '';
@@ -214,7 +214,7 @@ export default function App() {
     try {
       await downloadQRCode(qrInstanceRef.current, extension);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro ao exportar.';
+      const message = error instanceof Error ? error.message : 'Não foi possível iniciar o download. Tente novamente.';
 
       setExportError(message);
 
@@ -235,7 +235,7 @@ export default function App() {
     try {
       await exportCardAsPng('preview-card-export-area', config.bgColor);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro ao exportar o card.';
+      const message = error instanceof Error ? error.message : 'Não foi possível baixar o card. Tente novamente.';
 
       setExportError(message);
 
@@ -248,11 +248,11 @@ export default function App() {
   const suggestedTheme = getSuggestedLinkTheme(config.linkType);
   const linkTypeLabel = getLinkTypeLabel(config.linkType);
   const qrColorSourceLabel = hasManualQrColorOverride
-    ? 'Override manual ativo'
-    : 'Cor sincronizada automaticamente';
+    ? 'Cor escolhida manualmente'
+    : 'Cor sugerida pelo link';
   const logoUploadStatusLabel = logoDataUrl
-    ? `Logo normalizado: ${logoUploadState.fileName}`
-    : 'Nenhum logo SVG carregado';
+    ? `Logo pronto: ${logoUploadState.fileName}`
+    : 'Sem logo: envie um SVG para marcar o centro';
   const previewTextColor = getReadableTextColor(config.bgColor, {
     lightColor: config.textColor,
     darkColor: '#0f172a',
@@ -280,11 +280,11 @@ export default function App() {
       </div>
       <div>
         <dt>Empresa</dt>
-        <dd>{config.companyName || 'Opcional'}</dd>
+        <dd>{config.companyName || 'Sem nome no card'}</dd>
       </div>
       <div>
         <dt>Logo SVG</dt>
-        <dd>{logoUploadState.sanitizedMarkup ? logoUploadState.fileName : 'Aguardando upload'}</dd>
+        <dd>{logoUploadState.sanitizedMarkup ? logoUploadState.fileName : 'Sem logo carregado'}</dd>
       </div>
       <div>
         <dt>Tipo detectado</dt>
@@ -308,9 +308,9 @@ export default function App() {
           <h1 id="hero-title">QR Codes com identidade de marca.</h1>
 
           <div className="status-row" aria-label="Estado atual da aplicação">
-            <span className="status-chip">Entrada unificada</span>
-            <span className="status-chip">Validação em tempo real</span>
-            <span className="status-chip">Preview</span>
+            <span className="status-chip">Dados locais</span>
+            <span className="status-chip">Validação ao digitar</span>
+            <span className="status-chip">Prévia atualizada</span>
           </div>
         </header>
 
@@ -320,7 +320,7 @@ export default function App() {
               <label className="form-field field-span-2" htmlFor="url">
                 <div className="form-label-row">
                   <span className="form-label">URL de destino</span>
-                  <span className="form-hint">Obrigatoria</span>
+                  <span className="form-hint">Obrigatória</span>
                 </div>
                 <input
                   id="url"
@@ -329,7 +329,7 @@ export default function App() {
                   type="url"
                   value={config.url}
                   onChange={handleTextChange}
-                  placeholder="https://sua-marca.com"
+                  placeholder="https://sua-marca.com/cardapio"
                   aria-invalid={Boolean(errors.url)}
                   aria-describedby="url-error"
                   required
@@ -422,7 +422,7 @@ export default function App() {
               <div className="form-field field-span-2">
                 <div className="form-label-row">
                   <span className="form-label">Logo SVG</span>
-                  <span className="form-hint">Apenas SVG limpo</span>
+                  <span className="form-hint">Arquivo local</span>
                 </div>
                 <input
                   id="logoUpload"
@@ -434,7 +434,7 @@ export default function App() {
                   aria-describedby="logoUpload-help logoUpload-error"
                 />
                 <p className="form-hint" id="logoUpload-help">
-                  O arquivo e validado como SVG, tags perigosas sao removidas e erros nao quebram a tela.
+                  Envie um SVG. O app remove conteúdo perigoso antes de usar o logo.
                 </p>
                 {logoUploadState.error && (
                   <p className="form-error" id="logoUpload-error" aria-live="polite">
@@ -521,7 +521,7 @@ export default function App() {
               <label className="form-field field-span-2" htmlFor="textPosition">
                 <div className="form-label-row">
                   <span className="form-label">Posição do texto</span>
-                  <span className="form-hint">Topo ou base do card</span>
+                  <span className="form-hint">Onde o texto aparece</span>
                 </div>
                 <select
                   id="textPosition"
@@ -544,10 +544,10 @@ export default function App() {
           </section>
 
           <section className="panel panel-preview" aria-labelledby="preview-title">
-            <div className="preview-stage" aria-label="Resumo da configuração atual">
+            <div className="preview-stage" aria-label="Prévia e feedback da configuração atual">
               <article className={`preview-card preview-card-${config.textPosition}`} style={previewStyle}>
                 <header className="preview-card-header exclude-from-export">
-                  <span className="preview-badge">Preview</span>
+                  <span className="preview-badge">Prévia</span>
                   <div className="preview-status-group" aria-label="Feedback visual do estado atual">
                     <span className={`preview-status preview-status-${contrastFeedback.tone}`}>
                       {contrastFeedback.label}
@@ -565,10 +565,10 @@ export default function App() {
 
                   <div className="preview-copy-card">
                     <p className="preview-title">
-                      {config.title || 'Título do card ainda não definido'}
+                      {config.title || 'Digite um título para o card'}
                     </p>
                     <p className="preview-text">
-                      {config.description || 'A descrição curta aparece aqui enquanto o formulário é preenchido.'}
+                      {config.description || 'A descrição opcional aparece aqui.'}
                     </p>
                     <div className="exclude-from-export">
                       {previewDetails}
@@ -578,7 +578,7 @@ export default function App() {
 
                 <footer className="preview-card-footer exclude-from-export">
                   <span>{formatLogoScale(config.logoScale)} escala</span>
-                  <span>{logoDataUrl ? 'Logo pronto' : 'SVG pendente'}</span>
+                  <span>{logoDataUrl ? 'Logo pronto' : 'Sem logo'}</span>
                   <span>{qrColorSourceLabel}</span>
                 </footer>
               </article>
@@ -599,30 +599,30 @@ export default function App() {
                   className="action-button action-button-primary"
                   disabled={!canExport || isExporting}
                   aria-disabled={!canExport || isExporting}
-                  title={canExport ? 'Exportar QR em SVG' : 'Corrija o contraste para exportar'}
+                  title={canExport ? 'Baixar QR em SVG' : 'Aumente o contraste para baixar'}
                   onClick={() => handleExportQR('svg')}
                 >
-                  {isExporting ? 'Exportando…' : 'Exportar SVG'}
+                  {isExporting ? 'Preparando…' : 'Baixar SVG'}
                 </button>
                 <button
                   type="button"
                   className="action-button action-button-primary"
                   disabled={!canExport || isExporting}
                   aria-disabled={!canExport || isExporting}
-                  title={canExport ? 'Exportar QR em PNG' : 'Corrija o contraste para exportar'}
+                  title={canExport ? 'Baixar QR em PNG' : 'Aumente o contraste para baixar'}
                   onClick={() => handleExportQR('png')}
                 >
-                  {isExporting ? 'Exportando…' : 'Exportar PNG'}
+                  {isExporting ? 'Preparando…' : 'Baixar PNG'}
                 </button>
                 <button
                   type="button"
                   className="action-button action-button-secondary"
                   disabled={!canExport || isExporting}
                   aria-disabled={!canExport || isExporting}
-                  title={canExport ? 'Exportar card completo em PNG' : 'Corrija o contraste para exportar'}
+                  title={canExport ? 'Baixar card completo em PNG' : 'Aumente o contraste para baixar'}
                   onClick={handleExportCard}
                 >
-                  {isExporting ? 'Exportando…' : 'Exportar Card'}
+                  {isExporting ? 'Preparando…' : 'Baixar card'}
                 </button>
                 <span className={`scannability-badge scannability-badge-${scannability.level}`}>
                   {scannability.label}

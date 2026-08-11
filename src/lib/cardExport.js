@@ -17,7 +17,7 @@ export const exportCardAsPng = async (elementId, backgroundColor) => {
   const element = document.getElementById(elementId);
 
   if (!element) {
-    throw new Error(`Elemento com ID "${elementId}" não encontrado.`);
+    throw new Error('A prévia do card não foi encontrada. Recarregue a página e tente de novo.');
   }
 
   const options = {

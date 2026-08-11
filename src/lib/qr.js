@@ -66,13 +66,13 @@ const buildExportFileName = (extension) => {
 
 export const downloadQRCode = async (qrInstance, extension) => {
   if (!qrInstance) {
-    throw new Error('Instância do QR Code não disponível para exportação.');
+    throw new Error('O QR Code ainda não está pronto. Aguarde a prévia carregar e tente de novo.');
   }
 
   const validExtensions = ['svg', 'png'];
 
   if (!validExtensions.includes(extension)) {
-    throw new Error(`Formato de exportação "${extension}" não suportado.`);
+    throw new Error(`Formato de download "${extension}" não suportado.`);
   }
 
   const fileName = buildExportFileName(extension);
@@ -83,8 +83,8 @@ export const downloadQRCode = async (qrInstance, extension) => {
       name: fileName.replace(`.${extension}`, ''),
     });
   } catch (error) {
-    console.error('Erro ao exportar QR Code:', error);
+    console.error('Falha ao baixar QR Code:', error);
 
-    throw new Error('Não foi possível exportar o QR Code. Tente novamente.');
+    throw new Error('Não foi possível baixar o QR Code. Tente novamente.');
   }
 };
