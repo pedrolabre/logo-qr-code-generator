@@ -64,7 +64,7 @@ export const QRCodeConfigSchema = z.object({
  */
 
 export const createDefaultQRCodeConfig = (overrides = {}) => ({
-  url: 'https://logoqrcodegenerator.com',
+  url: 'https://exemplo.com',
   companyName: '',
   title: '',
   description: '',

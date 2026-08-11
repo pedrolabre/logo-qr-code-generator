@@ -347,7 +347,7 @@ export default function App() {
                   type="url"
                   value={config.url}
                   onChange={handleTextChange}
-                  placeholder="https://sua-marca.com/cardapio"
+                  placeholder="Ex.: https://exemplo.com"
                   aria-invalid={Boolean(errors.url)}
                   aria-describedby={buildAriaDescribedBy('url-hint', getFieldErrorId('url', errors.url))}
                   aria-errormessage={getFieldErrorId('url', errors.url)}
@@ -368,7 +368,7 @@ export default function App() {
                   type="text"
                   value={config.companyName}
                   onChange={handleTextChange}
-                  placeholder="Ex.: Studio Atlas"
+                  placeholder="Ex.: Nome da empresa"
                   aria-invalid={Boolean(errors.companyName)}
                   aria-describedby={buildAriaDescribedBy('companyName-hint', getFieldErrorId('companyName', errors.companyName))}
                   aria-errormessage={getFieldErrorId('companyName', errors.companyName)}

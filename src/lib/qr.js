@@ -24,7 +24,7 @@ const BASE_OPTIONS = Object.freeze({
 });
 
 export const buildQRCodeOptions = (config, logoDataUrl) => ({
-  data: config.url || 'https://logoqrcodegenerator.com',
+  data: config.url || 'https://exemplo.com',
   image: logoDataUrl || undefined,
   dotsOptions: {
     type: 'rounded',

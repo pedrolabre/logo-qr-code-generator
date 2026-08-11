@@ -70,6 +70,7 @@ Estrutura atual:
 logo-qr-code-generator/
   README.md
   package.json
+  package-lock.json
   index.html
   vite.config.js
   src/
