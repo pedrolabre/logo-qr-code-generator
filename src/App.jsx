@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { QRCodeConfigSchema, TEXT_POSITIONS, createInitialAppState } from './types';
 import { getContrastRatio, getContrastFeedback, getReadableTextColor, getScannabilityStatus } from './lib/contrast';
 import { detectLinkType, getLinkTypeLabel, getSuggestedLinkTheme } from './lib/linkDetection';
-import { readAndSanitizeSvgFile, normalizeSvgMarkup, svgMarkupToDataUrl } from './lib/svg';
+import { readAndSanitizeSvgFile, normalizeSvgMarkup, normalizeSvgMarkupWithInfo, svgMarkupToDataUrl } from './lib/svg';
 import { createQRCodeInstance, buildQRCodeOptions, downloadQRCode } from './lib/qr';
 import { exportCardAsPng } from './lib/cardExport';
 
@@ -32,17 +32,57 @@ const buildAriaDescribedBy = (...ids) => ids.filter(Boolean).join(' ') || undefi
 
 const getFieldErrorId = (fieldName, error) => (error ? `${fieldName}-error` : undefined);
 
+const THEME_COLOR_FIELDS = ['qrColor', 'bgColor', 'eyeColor', 'textColor'];
+
+const THEME_COLOR_FIELD_SET = new Set(THEME_COLOR_FIELDS);
+
+const THEME_COLOR_LABELS = {
+  qrColor: 'QR',
+  bgColor: 'Fundo',
+  eyeColor: 'Olhos',
+  textColor: 'Texto',
+};
+
+// The detected link returns a full theme, so ownership is tracked per color field.
+// URL changes can then refresh only theme-owned colors instead of special-casing QR.
+const createManualColorOverrides = (overrides = {}) =>
+  THEME_COLOR_FIELDS.reduce(
+    (accumulator, fieldName) => ({
+      ...accumulator,
+      [fieldName]: Boolean(overrides[fieldName]),
+    }),
+    {},
+  );
+
+const buildColorSourceSummary = (manualColorOverrides) =>
+  THEME_COLOR_FIELDS
+    .map((fieldName) => `${THEME_COLOR_LABELS[fieldName]}: ${manualColorOverrides[fieldName] ? 'manual' : 'tema'}`)
+    .join(' | ');
+
+const buildSuggestedThemeSummary = (suggestedTheme) =>
+  THEME_COLOR_FIELDS
+    .map((fieldName) => `${THEME_COLOR_LABELS[fieldName]} ${suggestedTheme[fieldName].toUpperCase()}`)
+    .join(' | ');
+
 const createValueUpdater = (setAppState) => (fieldName, value) => {
   setAppState((currentState) => {
     const nextConfig = {
       ...currentState.config,
       [fieldName]: value,
     };
+    const shouldMarkManualColorOverride = THEME_COLOR_FIELD_SET.has(fieldName);
+    const nextManualColorOverrides = shouldMarkManualColorOverride
+      ? {
+          ...createManualColorOverrides(currentState.manualColorOverrides),
+          [fieldName]: true,
+        }
+      : currentState.manualColorOverrides;
 
     return {
       ...currentState,
       config: nextConfig,
       errors: buildFieldErrors(nextConfig),
+      manualColorOverrides: nextManualColorOverrides,
     };
   });
 };
@@ -66,19 +106,21 @@ export default function App() {
     return {
       ...initialState,
       errors: buildFieldErrors(initialState.config),
-      hasManualQrColorOverride: false,
+      manualColorOverrides: createManualColorOverrides(),
     };
   });
   const [logoUploadState, setLogoUploadState] = useState({
     fileName: '',
     sanitizedMarkup: null,
     error: '',
+    warning: '',
   });
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState('');
 
   const updateValue = createValueUpdater(setAppState);
-  const { config, errors, hasManualQrColorOverride } = appState;
+  const { config, errors, manualColorOverrides } = appState;
+  const effectiveManualColorOverrides = createManualColorOverrides(manualColorOverrides);
 
   const logoDataUrl = useMemo(() => {
     if (!logoUploadState.sanitizedMarkup) {
@@ -130,28 +172,31 @@ export default function App() {
     const suggestedTheme = getSuggestedLinkTheme(detectedLinkType);
 
     setAppState((currentState) => {
-      const nextLinkType = detectedLinkType;
-      const nextQrColor = currentState.hasManualQrColorOverride
-        ? currentState.config.qrColor
-        : suggestedTheme.qrColor;
-
-      if (
-        currentState.config.linkType === nextLinkType &&
-        currentState.config.qrColor === nextQrColor
-      ) {
-        return currentState;
-      }
-
+      const nextManualColorOverrides = createManualColorOverrides(currentState.manualColorOverrides);
       const nextConfig = {
         ...currentState.config,
-        linkType: nextLinkType,
-        qrColor: nextQrColor,
+        linkType: detectedLinkType,
       };
+
+      for (const fieldName of THEME_COLOR_FIELDS) {
+        if (!nextManualColorOverrides[fieldName]) {
+          nextConfig[fieldName] = suggestedTheme[fieldName];
+        }
+      }
+
+      const hasConfigChanges =
+        currentState.config.linkType !== nextConfig.linkType ||
+        THEME_COLOR_FIELDS.some((fieldName) => currentState.config[fieldName] !== nextConfig[fieldName]);
+
+      if (!hasConfigChanges) {
+        return currentState;
+      }
 
       return {
         ...currentState,
         config: nextConfig,
         errors: buildFieldErrors(nextConfig),
+        manualColorOverrides: nextManualColorOverrides,
       };
     });
   }, [config.url]);
@@ -177,15 +222,18 @@ export default function App() {
 
     try {
       const sanitizedSvg = await readAndSanitizeSvgFile(file);
+      const normalizedSvg = normalizeSvgMarkupWithInfo(sanitizedSvg);
 
       setLogoUploadState({
         fileName: file.name,
         sanitizedMarkup: sanitizedSvg,
         error: '',
+        warning: normalizedSvg.warning,
       });
     } catch (error) {
       setLogoUploadState((currentState) => ({
         ...currentState,
+        warning: '',
         error: error instanceof Error ? error.message : 'Não foi possível processar esse SVG. Tente outro arquivo.',
       }));
     } finally {
@@ -193,22 +241,8 @@ export default function App() {
     }
   };
 
-  const handleQrColorChange = (event) => {
-    const nextQrColor = event.currentTarget.value;
-
-    setAppState((currentState) => {
-      const nextConfig = {
-        ...currentState.config,
-        qrColor: nextQrColor,
-      };
-
-      return {
-        ...currentState,
-        config: nextConfig,
-        errors: buildFieldErrors(nextConfig),
-        hasManualQrColorOverride: true,
-      };
-    });
+  const handleColorChange = (event) => {
+    updateValue(event.currentTarget.name, event.currentTarget.value);
   };
 
   const handleExportQR = async (extension) => {
@@ -255,9 +289,8 @@ export default function App() {
 
   const suggestedTheme = getSuggestedLinkTheme(config.linkType);
   const linkTypeLabel = getLinkTypeLabel(config.linkType);
-  const qrColorSourceLabel = hasManualQrColorOverride
-    ? 'Cor escolhida manualmente'
-    : 'Cor sugerida pelo link';
+  const colorSourceSummary = buildColorSourceSummary(effectiveManualColorOverrides);
+  const suggestedThemeSummary = buildSuggestedThemeSummary(suggestedTheme);
   const logoUploadStatusLabel = logoDataUrl
     ? `Logo pronto: ${logoUploadState.fileName}`
     : 'Sem logo: envie um SVG para marcar o centro';
@@ -308,8 +341,8 @@ export default function App() {
         <dd>{linkTypeLabel}</dd>
       </div>
       <div>
-        <dt>Cor sugerida</dt>
-        <dd>{suggestedTheme.qrColor.toUpperCase()}</dd>
+        <dt>Tema de cores</dt>
+        <dd>{suggestedThemeSummary}</dd>
       </div>
     </dl>
   );
@@ -458,6 +491,7 @@ export default function App() {
                   aria-describedby={buildAriaDescribedBy(
                     'logoUpload-help',
                     'logoUpload-status',
+                    logoUploadState.warning ? 'logoUpload-warning' : undefined,
                     logoUploadState.error ? 'logoUpload-error' : undefined,
                   )}
                   aria-errormessage={logoUploadState.error ? 'logoUpload-error' : undefined}
@@ -468,6 +502,11 @@ export default function App() {
                 {logoUploadState.error && (
                   <p className="form-error" id="logoUpload-error" aria-live="polite">
                     {logoUploadState.error}
+                  </p>
+                )}
+                {logoUploadState.warning && (
+                  <p className="form-hint" id="logoUpload-warning" aria-live="polite">
+                    {logoUploadState.warning}
                   </p>
                 )}
                 <p className="upload-status" id="logoUpload-status" aria-live="polite">
@@ -488,7 +527,7 @@ export default function App() {
                       name="qrColor"
                       type="color"
                       value={config.qrColor}
-                      onChange={handleQrColorChange}
+                      onChange={handleColorChange}
                       aria-label="Cor do QR Code"
                       aria-invalid={Boolean(errors.qrColor)}
                       aria-describedby={buildAriaDescribedBy('qrColor-value', getFieldErrorId('qrColor', errors.qrColor))}
@@ -507,7 +546,7 @@ export default function App() {
                       name="bgColor"
                       type="color"
                       value={config.bgColor}
-                      onChange={handleTextChange}
+                      onChange={handleColorChange}
                       aria-label="Cor de fundo"
                       aria-invalid={Boolean(errors.bgColor)}
                       aria-describedby={buildAriaDescribedBy('bgColor-value', getFieldErrorId('bgColor', errors.bgColor))}
@@ -526,7 +565,7 @@ export default function App() {
                       name="eyeColor"
                       type="color"
                       value={config.eyeColor}
-                      onChange={handleTextChange}
+                      onChange={handleColorChange}
                       aria-label="Cor dos olhos do QR Code"
                       aria-invalid={Boolean(errors.eyeColor)}
                       aria-describedby={buildAriaDescribedBy('eyeColor-value', getFieldErrorId('eyeColor', errors.eyeColor))}
@@ -545,7 +584,7 @@ export default function App() {
                       name="textColor"
                       type="color"
                       value={config.textColor}
-                      onChange={handleTextChange}
+                      onChange={handleColorChange}
                       aria-label="Cor do texto"
                       aria-invalid={Boolean(errors.textColor)}
                       aria-describedby={buildAriaDescribedBy('textColor-value', getFieldErrorId('textColor', errors.textColor))}
@@ -629,7 +668,7 @@ export default function App() {
                 <footer className="preview-card-footer exclude-from-export">
                   <span>{formatLogoScale(config.logoScale)} escala</span>
                   <span>{logoDataUrl ? 'Logo pronto' : 'Sem logo'}</span>
-                  <span>{qrColorSourceLabel}</span>
+                  <span>{colorSourceSummary}</span>
                 </footer>
               </article>
 
