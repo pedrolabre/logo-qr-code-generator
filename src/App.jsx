@@ -4,6 +4,7 @@ import { getContrastRatio, getContrastFeedback, getReadableTextColor, getScannab
 import { detectLinkType, getLinkTypeLabel, getSuggestedLinkTheme } from './lib/linkDetection';
 import { readAndSanitizeSvgFile, normalizeSvgMarkup, svgMarkupToDataUrl } from './lib/svg';
 import { createQRCodeInstance, buildQRCodeOptions, downloadQRCode } from './lib/qr';
+import { exportCardAsPng } from './lib/cardExport';
 
 const buildFieldErrors = (config) => {
   const validationResult = QRCodeConfigSchema.safeParse(config);
@@ -214,6 +215,27 @@ export default function App() {
       await downloadQRCode(qrInstanceRef.current, extension);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro ao exportar.';
+
+      setExportError(message);
+
+      setTimeout(() => setExportError(''), 5000);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportCard = async () => {
+    if (!canExport || isExporting) {
+      return;
+    }
+
+    setIsExporting(true);
+    setExportError('');
+
+    try {
+      await exportCardAsPng('preview-card-export-area', config.bgColor);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao exportar o card.';
 
       setExportError(message);
 
@@ -524,7 +546,7 @@ export default function App() {
           <section className="panel panel-preview" aria-labelledby="preview-title">
             <div className="preview-stage" aria-label="Resumo da configuração atual">
               <article className={`preview-card preview-card-${config.textPosition}`} style={previewStyle}>
-                <header className="preview-card-header">
+                <header className="preview-card-header exclude-from-export">
                   <span className="preview-badge">Preview</span>
                   <div className="preview-status-group" aria-label="Feedback visual do estado atual">
                     <span className={`preview-status preview-status-${contrastFeedback.tone}`}>
@@ -536,7 +558,7 @@ export default function App() {
                   </div>
                 </header>
 
-                <div className="preview-card-body">
+                <div id="preview-card-export-area" className="preview-card-body" style={{ backgroundColor: config.bgColor }}>
                   <div className="preview-visual">
                     <div className="preview-qr-mount" ref={qrContainerRef} />
                   </div>
@@ -548,11 +570,13 @@ export default function App() {
                     <p className="preview-text">
                       {config.description || 'A descrição curta aparece aqui enquanto o formulário é preenchido.'}
                     </p>
-                    {previewDetails}
+                    <div className="exclude-from-export">
+                      {previewDetails}
+                    </div>
                   </div>
                 </div>
 
-                <footer className="preview-card-footer">
+                <footer className="preview-card-footer exclude-from-export">
                   <span>{formatLogoScale(config.logoScale)} escala</span>
                   <span>{logoDataUrl ? 'Logo pronto' : 'SVG pendente'}</span>
                   <span>{qrColorSourceLabel}</span>
@@ -593,11 +617,12 @@ export default function App() {
                 <button
                   type="button"
                   className="action-button action-button-secondary"
-                  disabled={!canExport}
-                  aria-disabled={!canExport}
-                  title={canExport ? 'Exportar card completo' : 'Corrija o contraste para exportar'}
+                  disabled={!canExport || isExporting}
+                  aria-disabled={!canExport || isExporting}
+                  title={canExport ? 'Exportar card completo em PNG' : 'Corrija o contraste para exportar'}
+                  onClick={handleExportCard}
                 >
-                  Exportar Card
+                  {isExporting ? 'Exportando…' : 'Exportar Card'}
                 </button>
                 <span className={`scannability-badge scannability-badge-${scannability.level}`}>
                   {scannability.label}

@@ -77,6 +77,7 @@ logo-qr-code-generator/
     main.jsx
     types.js
     lib/
+      cardExport.js
       contrast.js
       linkDetection.js
       qr.js
