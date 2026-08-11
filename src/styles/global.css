@@ -11,7 +11,7 @@
   --color-accent: #0b5fff;
   --color-accent-soft: rgba(11, 95, 255, 0.14);
   --color-accent-strong: #092f8f;
-  --color-focus: #f59e0b;
+  --color-focus: #b45309;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -27,7 +27,7 @@
   --shadow-lg: 0 28px 80px rgba(15, 23, 42, 0.12);
   --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
   --container-width: 1440px;
-  --focus-ring: 0 0 0 4px rgba(245, 158, 11, 0.28);
+  --focus-ring: 0 0 0 4px rgba(180, 83, 9, 0.24);
   background:
     radial-gradient(circle at top left, rgba(11, 95, 255, 0.18), transparent 34%),
     radial-gradient(circle at 88% 8%, rgba(245, 158, 11, 0.16), transparent 24%),
@@ -69,8 +69,21 @@ select {
 }
 
 :focus-visible {
-  outline: none;
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
   box-shadow: var(--focus-ring);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .app-shell {
@@ -283,6 +296,16 @@ select {
   outline: none;
   border-color: rgba(11, 95, 255, 0.5);
   box-shadow: 0 0 0 3px rgba(11, 95, 255, 0.12);
+}
+
+.text-input:focus-visible,
+.file-input:focus-visible,
+.range-input:focus-visible,
+.color-control input:focus-visible,
+.action-button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  box-shadow: var(--focus-ring);
 }
 
 .text-input[aria-invalid='true'] {
@@ -741,7 +764,12 @@ select {
 }
 
 .preview-copy-card .preview-text {
-  color: var(--color-muted);
+  color: var(--preview-text);
+}
+
+.preview-copy-card .preview-summary dt,
+.preview-copy-card .preview-summary dd {
+  color: var(--preview-text);
 }
 
 .preview-summary-grid {
