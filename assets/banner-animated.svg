@@ -1,0 +1,271 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="100%" height="100%">
+  <defs>
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;family=Share+Tech+Mono&amp;display=swap');
+      
+      :root {
+        --bg-color-1: #0d1117;
+        --bg-color-2: #161b22;
+        --bg-color-3: #21262d;
+        --grid-color: #21262d;
+        --tech-color: #5d6775;
+        --border-cota: #30363d;
+        
+        --text-title-1: #ffffff;
+        --text-body: #8b949e;
+        
+        --mockup-bg: #f6f7f9;
+        --mockup-border: #d8dee7;
+        --mockup-titlebar-bg: #ffffff;
+        --mockup-url-bg: #f6f7f9;
+        --mockup-url-border: #d8dee7;
+        --mockup-url-text: #6b7280;
+        --mockup-title-text: #111827;
+        --mockup-subtitle-text: #6b7280;
+        --mockup-cell-bg: #ffffff;
+        
+        --accent-blue: #0B5FFF;
+        --accent-blue-glow: #3B82F6;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg-color-1: #e0f2fe;
+          --bg-color-2: #f0f9ff;
+          --bg-color-3: #ffffff;
+          --grid-color: #bae6fd;
+          --tech-color: #64748b;
+          --border-cota: #cbd5e1;
+          
+          --text-title-1: #0f172a;
+          --text-body: #475569;
+          
+          --mockup-bg: #111318;
+          --mockup-border: #30363d;
+          --mockup-titlebar-bg: #171b22;
+          --mockup-url-bg: #111318;
+          --mockup-url-border: rgba(255,255,255,0.1);
+          --mockup-url-text: #9ca3af;
+          --mockup-title-text: #f5f7fa;
+          --mockup-subtitle-text: #9ca3af;
+          --mockup-cell-bg: #10141b;
+        }
+      }
+
+      .text-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; fill: var(--text-title-1); }
+      .text-subtitle { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; fill: var(--accent-blue); letter-spacing: 5px; }
+      .text-body-style { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; fill: var(--text-body); }
+      .text-tech { font-family: 'Share Tech Mono', monospace; fill: var(--tech-color); font-size: 11px; }
+      .mockup-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; fill: var(--mockup-title-text); font-size: 13px; }
+      .mockup-subtitle { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; fill: var(--mockup-subtitle-text); font-size: 8px; }
+      .badge-text { font-family: 'Share Tech Mono', monospace; font-weight: 700; fill: #ffffff; font-size: 10px; text-anchor: middle; }
+
+      @keyframes float-mockup {
+        0%, 100% { transform: translateY(0px) rotate(0.5deg); }
+        50% { transform: translateY(-6px) rotate(-0.5deg); }
+      }
+      .mockup-group { animation: float-mockup 6s ease-in-out infinite; transform-origin: 975px 225px; }
+      
+      @keyframes float-badge {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+      }
+      .badge-float { animation: float-badge 4.5s ease-in-out infinite; }
+      
+      @keyframes rotate-radar {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .tech-radar { animation: rotate-radar 20s linear infinite; transform-origin: 600px 240px; }
+    </style>
+
+    <clipPath id="topRoundedClip"><rect x="0" y="0" width="390" height="28" rx="14" ry="14" /></clipPath>
+    <clipPath id="roundedClip"><rect width="100" height="100" rx="22" ry="22"/></clipPath>
+
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="var(--bg-color-1)" />
+      <stop offset="50%" stop-color="var(--bg-color-2)" />
+      <stop offset="100%" stop-color="var(--bg-color-3)" />
+    </linearGradient>
+
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B5FFF"/>
+      <stop offset="100%" stop-color="#0035A0"/>
+    </linearGradient>
+    
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="480" fill="url(#bg-grad)" />
+
+  <g opacity="0.12">
+    <path d="M-100,0 L1300,0 M-100,40 L1300,40 M-100,80 L1300,80 M-100,120 L1300,120 M-100,160 L1300,160 M-100,200 L1300,200 M-100,240 L1300,240 M-100,280 L1300,280 M-100,320 L1300,320 M-100,360 L1300,360 M-100,400 L1300,400 M-100,440 L1300,440" stroke="var(--border-cota)" stroke-width="1"/>
+    <path d="M-100,0 L1300,700 M-100,-200 L1300,500 M-100,-400 L1300,300 M-100,-600 L1300,100 M-100,200 L1300,900 M-100,400 L1300,1100" stroke="var(--border-cota)" stroke-width="0.5" stroke-dasharray="3,3"/>
+  </g>
+
+  <path d="M 30 50 L 30 30 L 50 30" fill="none" stroke="var(--border-cota)" stroke-width="1.5"/>
+  <path d="M 1170 50 L 1170 30 L 1150 30" fill="none" stroke="var(--border-cota)" stroke-width="1.5"/>
+  <path d="M 30 430 L 30 450 L 50 450" fill="none" stroke="var(--border-cota)" stroke-width="1.5"/>
+  <path d="M 1170 430 L 1170 450 L 1150 450" fill="none" stroke="var(--border-cota)" stroke-width="1.5"/>
+
+  <text x="40" y="45" class="text-tech">REF: LQ_APP_BANNER_V1.1</text>
+  <text x="1065" y="45" class="text-tech">COORD: 1200 x 480 px</text>
+  <text x="40" y="445" class="text-tech">SYS: REACT_18 // VITE</text>
+  <text x="1080" y="445" class="text-tech">THEME: DYNAMIC_LIGHT_DARK</text>
+
+  <g class="tech-radar">
+    <circle cx="600" cy="240" r="10" fill="none" stroke="var(--border-cota)" stroke-width="0.75" />
+    <line x1="580" y1="240" x2="620" y2="240" stroke="var(--border-cota)" stroke-width="0.75"/>
+    <line x1="600" y1="220" x2="600" y2="260" stroke="var(--border-cota)" stroke-width="0.75"/>
+  </g>
+
+  <!-- LEFT SIDE: Project Identity -->
+  <g transform="rotate(-3, 145, 220)">
+    <g transform="translate(60, 140) scale(1.5)">
+      <!-- Main Icon Background -->
+      <rect width="100" height="100" rx="22" ry="22" fill="url(#bgGrad)" />
+      <!-- Logo L Q from favicon -->
+      <g transform="scale(0.39) translate(6, -6)">
+        <path fill="url(#blueGrad)" d="M23 34H51V175C51 177 52 179 58 182H125L146 212H41C37 211 33 208 32 208C26 202 23 195 23 195V34Z"/>
+        <path fill="#ffffff" d="M98 55H195C201 55 208 63 211 69V179L207 182L226 204V212H176L148 181V159H171L181 172L183 171V91C183 86 178 83 175 83H116C114 85 112 87 112 89V157H83V73C83 66 87 62 91 58C93 56 95 55 98 55Z"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Typography Block -->
+  <g transform="translate(230, 0)">
+    <text x="0" y="215" class="text-title" font-size="44" letter-spacing="1">LOGO QR CODE</text>
+    <text x="2" y="255" class="text-subtitle" font-size="15">GERADOR COM BRANDING</text>
+    <text x="2" y="295" class="text-body-style" font-size="14">Criação de QR Codes corporativos com</text>
+    <text x="2" y="315" class="text-body-style" font-size="14">logos centralizados e cards visuais vetoriais</text>
+    <text x="2" y="345" class="text-tech" font-size="10">ECMA // SPA // SVG_EXPORT // CLIENT_SIDE</text>
+  </g>
+
+  <!-- Badges -->
+  <g transform="translate(260, 400)">
+    <g class="badge-float">
+      <circle cx="0" cy="0" r="22" fill="#0B5FFF" stroke="#ffffff" stroke-width="1.5" />
+      <text x="0" y="3.5" class="badge-text">SVG</text>
+    </g>
+  </g>
+  <g transform="translate(320, 400)">
+    <g class="badge-float" style="animation-delay: 0.2s;">
+      <circle cx="0" cy="0" r="22" fill="#FF4D00" stroke="#ffffff" stroke-width="1.5" />
+      <text x="0" y="3.5" class="badge-text">PNG</text>
+    </g>
+  </g>
+
+  <!-- RIGHT SIDE: App Mockup -->
+  <g class="mockup-group">
+    <!-- Window drop shadow -->
+    <rect x="780" y="85" width="390" height="280" rx="14" fill="#000000" opacity="0.15" filter="blur(8px)" transform="translate(0, 10)" />
+    
+    <rect x="780" y="85" width="390" height="280" rx="14" fill="var(--mockup-bg)" stroke="var(--mockup-border)" stroke-width="1.5" />
+    
+    <g clip-path="url(#topRoundedClip)" transform="translate(780, 85)">
+      <rect x="0" y="0" width="390" height="28" fill="var(--mockup-titlebar-bg)" />
+    </g>
+    <!-- Mac OS Dots -->
+    <circle cx="798" cy="99" r="4" fill="#ea4aaa" />
+    <circle cx="810" cy="99" r="4" fill="#ffc72c" />
+    <circle cx="822" cy="99" r="4" fill="#28a745" />
+    
+    <rect x="850" y="92" width="220" height="14" rx="4" fill="var(--mockup-url-bg)" stroke="var(--mockup-url-border)" stroke-width="0.75" />
+    <text x="960" y="102" font-family="'Segoe UI', system-ui, sans-serif" font-size="7" fill="var(--mockup-url-text)" text-anchor="middle">logo-qr-code-generator.vercel.app</text>
+
+    <!-- Configuration Panel -->
+    <text x="800" y="136" class="mockup-title" style="font-size: 11px;">Configurações do QR Code</text>
+    <text x="800" y="147" class="mockup-subtitle">Personalize cores, tamanho e logo</text>
+
+    <!-- URL Input -->
+    <rect x="800" y="158" width="150" height="20" rx="4" fill="var(--mockup-cell-bg)" stroke="var(--mockup-border)" stroke-width="1" />
+    <text x="806" y="170" font-family="'Segoe UI', system-ui, sans-serif" font-size="6" fill="var(--mockup-title-text)">https://seusite.com.br</text>
+    
+    <!-- Upload Box -->
+    <rect x="800" y="184" width="150" height="30" rx="4" fill="var(--mockup-url-bg)" stroke="var(--mockup-border)" stroke-width="1" stroke-dasharray="2,2" />
+    <text x="875" y="200" font-family="'Segoe UI', system-ui, sans-serif" font-size="6" fill="var(--mockup-subtitle-text)" text-anchor="middle">Arraste seu Logo SVG aqui</text>
+    
+    <!-- Sliders -->
+    <text x="800" y="228" font-family="'Segoe UI', system-ui, sans-serif" font-size="5" fill="var(--mockup-subtitle-text)" font-weight="700">ESCALA DO LOGO (30%)</text>
+    <rect x="800" y="234" width="150" height="4" rx="2" fill="var(--mockup-url-bg)" />
+    <rect x="800" y="234" width="50" height="4" rx="2" fill="#0B5FFF" />
+    <circle cx="850" cy="236" r="4" fill="#ffffff" stroke="#0B5FFF" stroke-width="1.5" />
+
+    <text x="800" y="250" font-family="'Segoe UI', system-ui, sans-serif" font-size="5" fill="var(--mockup-subtitle-text)" font-weight="700">NÍVEL DE CORREÇÃO (H)</text>
+    <rect x="800" y="256" width="150" height="4" rx="2" fill="var(--mockup-url-bg)" />
+    <rect x="800" y="256" width="120" height="4" rx="2" fill="#10B981" />
+    <circle cx="920" cy="258" r="4" fill="#ffffff" stroke="#10B981" stroke-width="1.5" />
+
+    <!-- Download Buttons -->
+    <rect x="800" y="274" width="70" height="18" rx="4" fill="#0B5FFF" />
+    <text x="835" y="285" font-family="'Segoe UI', system-ui, sans-serif" font-size="6" fill="#ffffff" font-weight="700" text-anchor="middle">BAIXAR SVG</text>
+    
+    <rect x="880" y="274" width="70" height="18" rx="4" fill="var(--mockup-cell-bg)" stroke="#0B5FFF" stroke-width="1" />
+    <text x="915" y="285" font-family="'Segoe UI', system-ui, sans-serif" font-size="6" fill="#0B5FFF" font-weight="700" text-anchor="middle">BAIXAR PNG</text>
+
+    <!-- Divider -->
+    <line x1="965" y1="113" x2="965" y2="365" stroke="var(--mockup-border)" stroke-width="0.75" />
+
+    <!-- Right Side: Big QR Preview with styling -->
+    <g transform="translate(980, 125)">
+      <rect x="0" y="0" width="170" height="230" rx="8" fill="var(--mockup-cell-bg)" stroke="var(--mockup-border)" stroke-width="0.5" />
+      
+      <!-- Preview Header -->
+      <text x="85" y="15" font-family="'Segoe UI', system-ui, sans-serif" font-size="6" fill="var(--mockup-subtitle-text)" font-weight="700" text-anchor="middle" letter-spacing="1">PREVIEW EM TEMPO REAL</text>
+      <line x1="10" y1="22" x2="160" y2="22" stroke="var(--mockup-border)" stroke-width="0.5" />
+      
+      <!-- Big QR Code Group -->
+      <g transform="translate(30, 40) scale(1.1)">
+        <!-- Outer Frame -->
+        <rect x="-5" y="-5" width="110" height="110" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1" />
+        
+        <!-- Position Markers (Eyes) -->
+        <path d="M0 0 H25 V25 H0 Z M5 5 H20 V20 H5 Z M10 10 H15 V15 H10 Z" fill="#0F172A" />
+        <path d="M75 0 H100 V25 H75 Z M80 5 H95 V20 H80 Z M85 10 H90 V15 H85 Z" fill="#0F172A" />
+        <path d="M0 75 H25 V100 H0 Z M5 80 H20 V95 H5 Z M10 85 H15 V90 H10 Z" fill="#0F172A" />
+        
+        <!-- Random Data Blocks -->
+        <!-- Top area -->
+        <rect x="30" y="0" width="10" height="10" rx="2" fill="#0F172A" />
+        <rect x="45" y="0" width="20" height="10" rx="2" fill="#0B5FFF" />
+        <rect x="30" y="15" width="25" height="10" rx="2" fill="#0F172A" />
+        <rect x="60" y="15" width="10" height="10" rx="2" fill="#0B5FFF" />
+        
+        <!-- Left area -->
+        <rect x="0" y="30" width="10" height="15" rx="2" fill="#0F172A" />
+        <rect x="15" y="30" width="10" height="10" rx="2" fill="#0B5FFF" />
+        <rect x="0" y="50" width="25" height="10" rx="2" fill="#0F172A" />
+        <rect x="15" y="65" width="10" height="5" rx="2" fill="#0F172A" />
+        
+        <!-- Right area -->
+        <rect x="75" y="30" width="10" height="10" rx="2" fill="#0F172A" />
+        <rect x="90" y="30" width="10" height="20" rx="2" fill="#0B5FFF" />
+        <rect x="75" y="45" width="10" height="10" rx="2" fill="#0F172A" />
+        <rect x="75" y="60" width="25" height="10" rx="2" fill="#0F172A" />
+        
+        <!-- Bottom area -->
+        <rect x="30" y="75" width="10" height="25" rx="2" fill="#0F172A" />
+        <rect x="45" y="75" width="15" height="10" rx="2" fill="#0B5FFF" />
+        <rect x="45" y="90" width="25" height="10" rx="2" fill="#0F172A" />
+        <rect x="65" y="75" width="5" height="10" rx="2" fill="#0B5FFF" />
+
+        <!-- Logo Background Block -->
+        <rect x="32" y="32" width="36" height="36" rx="8" fill="#ffffff" />
+        <!-- Blue Base -->
+        <rect x="34" y="34" width="32" height="32" rx="6" fill="#0B5FFF" />
+        
+        <!-- Logo L Q from favicon (Scaled) -->
+        <path fill="#0F172A" transform="translate(36, 36) scale(0.12)" d="M23 34H51V175C51 177 52 179 58 182H125L146 212H41C37 211 33 208 32 208C26 202 23 195 23 195V34Z"/>
+        <path fill="#ffffff" transform="translate(36, 36) scale(0.12)" d="M98 55H195C201 55 208 63 211 69V179L207 182L226 204V212H176L148 181V159H171L181 172L183 171V91C183 86 178 83 175 83H116C114 85 112 87 112 89V157H83V73C83 66 87 62 91 58C93 56 95 55 98 55Z"/>
+      </g>
+      
+      <!-- Footer text in preview -->
+      <rect x="35" y="200" width="100" height="12" rx="6" fill="#E2E8F0" />
+      <text x="85" y="208.5" font-family="'Segoe UI', system-ui, sans-serif" font-size="5" fill="#64748B" font-weight="700" text-anchor="middle">ESCANEAR PARA ACESSAR</text>
+    </g>
+
+  </g>
+</svg>
