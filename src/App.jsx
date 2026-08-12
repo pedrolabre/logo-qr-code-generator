@@ -355,6 +355,7 @@ export default function App() {
       <section className="app-frame" aria-labelledby="hero-title">
         <header className="app-header">
           <p className="eyebrow">Logo QR Code Generator</p>
+          <img src="/favicon.svg" alt="" className="header-logo" aria-hidden="true" />
           <h1 id="hero-title">QR Codes com identidade de marca.</h1>
 
           <div className="status-row" aria-label="Estado atual da aplicação">

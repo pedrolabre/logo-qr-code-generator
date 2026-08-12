@@ -1,0 +1,38 @@
+<svg
+  width="256"
+  height="251"
+  viewBox="0 0 256 251"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <style>
+      :root {
+        --lq-blue: #0B5FFF;
+        --lq-q-color: #0F172A;
+        --lq-bg: transparent;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --lq-q-color: #FFFFFF;
+          --lq-bg: #0F172A;
+        }
+      }
+    </style>
+  </defs>
+
+  <!-- fundo -->
+  <rect width="256" height="251" rx="24" fill="var(--lq-bg)" />
+
+  <!-- L -->
+  <path
+    fill="var(--lq-blue)"
+    d="M23 34H51V175C51 177 52 179 58 182H125L146 212H41C37 211 33 208 32 208C26 202 23 195 23 195V34Z"
+  />
+
+  <!-- Q -->
+  <path
+    fill="var(--lq-q-color)"
+    d="M98 55H195C201 55 208 63 211 69V179L207 182L226 204V212H176L148 181V159H171L181 172L183 171V91C183 86 178 83 175 83H116C114 85 112 87 112 89V157H83V73C83 66 87 62 91 58C93 56 95 55 98 55Z"
+  />
+</svg>
