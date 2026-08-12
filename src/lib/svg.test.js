@@ -31,7 +31,7 @@ describe('sanitizeSvgMarkup', () => {
     expect(sanitizedMarkup).not.toContain('evil.com');
   });
 
-  it('removes style tags instead of trying to blacklist CSS fetch vectors', () => {
+  it('removes style tags that contain external CSS fetch vectors', () => {
     const sanitizedMarkup = sanitizeSvgMarkup(`
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">
         <style>@import url("https://evil.com/track.css"); path { fill: red; }</style>
@@ -43,6 +43,19 @@ describe('sanitizeSvgMarkup', () => {
     expect(documentNode.getElementsByTagName('style')).toHaveLength(0);
     expect(documentNode.getElementsByTagName('path')).toHaveLength(1);
     expect(sanitizedMarkup).not.toContain('evil.com');
+  });
+
+  it('keeps style tags that are safe', () => {
+    const sanitizedMarkup = sanitizeSvgMarkup(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">
+        <style>path { fill: red; }</style>
+        <path d="M0 0h10v10H0z" />
+      </svg>
+    `);
+    const documentNode = parseSvg(sanitizedMarkup);
+
+    expect(documentNode.getElementsByTagName('style')).toHaveLength(1);
+    expect(documentNode.getElementsByTagName('path')).toHaveLength(1);
   });
 
   it('keeps use elements but strips external href and xlink:href values', () => {

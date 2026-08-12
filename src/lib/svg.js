@@ -36,6 +36,12 @@ const ALLOWED_TAG_NAMES = new Set([
   'title',
   'desc',
   'style',
+  'text',
+  'tspan',
+  'filter',
+  'fegaussianblur',
+  'femerge',
+  'femergenode',
 ]);
 
 const GLOBAL_ATTRIBUTE_NAMES = new Set([
@@ -60,6 +66,7 @@ const GLOBAL_ATTRIBUTE_NAMES = new Set([
   'mask',
   'display',
   'visibility',
+  'filter',
 ]);
 
 const ATTRIBUTE_NAMES_BY_TAG = {
@@ -104,6 +111,12 @@ const ATTRIBUTE_NAMES_BY_TAG = {
   use: new Set(['href', 'xlink:href', 'x', 'y', 'width', 'height']),
   title: new Set(),
   desc: new Set(),
+  text: new Set(['x', 'y', 'dx', 'dy', 'text-anchor', 'font-family', 'font-size', 'font-weight', 'font-style', 'letter-spacing']),
+  tspan: new Set(['x', 'y', 'dx', 'dy', 'text-anchor', 'font-family', 'font-size', 'font-weight', 'font-style', 'letter-spacing']),
+  filter: new Set(['x', 'y', 'width', 'height', 'filterunits', 'primitiveunits']),
+  fegaussianblur: new Set(['in', 'stddeviation', 'result']),
+  femerge: new Set(['result']),
+  femergenode: new Set(['in']),
 };
 
 const HREF_ALLOWED_TAG_NAMES = new Set(['use', 'lineargradient', 'radialgradient']);
@@ -236,6 +249,14 @@ const sanitizeElementTree = (documentNode) => {
     }
 
     const tagName = getElementTagName(element);
+
+    if (tagName === 'style') {
+      const styleContent = element.textContent;
+      if (/@import/i.test(styleContent) || !hasOnlyLocalUrlReferences(styleContent) || /expression\s*\(/i.test(styleContent)) {
+        element.remove();
+        continue;
+      }
+    }
 
     for (const attribute of Array.from(element.attributes)) {
       if (!isAllowedAttribute(tagName, attribute)) {
