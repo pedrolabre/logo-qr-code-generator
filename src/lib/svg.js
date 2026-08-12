@@ -35,6 +35,7 @@ const ALLOWED_TAG_NAMES = new Set([
   'use',
   'title',
   'desc',
+  'style',
 ]);
 
 const GLOBAL_ATTRIBUTE_NAMES = new Set([

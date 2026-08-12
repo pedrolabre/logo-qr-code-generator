@@ -180,8 +180,10 @@ select {
   flex-wrap: wrap;
   gap: 0.25rem;
   margin-left: auto;
+  align-items: center;
 }
 
+.theme-toggle,
 .status-chip {
   padding: 0.2rem 0.4rem;
   border-radius: 0;
@@ -191,6 +193,27 @@ select {
   font-size: 0.56rem;
   font-weight: 700;
 }
+
+.theme-toggle {
+  width: 1.8rem;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  min-height: 1.65rem;
+}
+.theme-toggle:hover {
+  border-color: rgba(11, 95, 255, 0.55);
+}
+.theme-toggle svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  display: block;
+}
+
+.header-logo .logo-bg { fill: transparent; }
+.header-logo .logo-l { fill: #0b5fff; }
+.header-logo .logo-q { fill: #0f172a; }
 
 .layout-grid {
   flex: 1;
@@ -1169,4 +1192,90 @@ select {
     padding: 0.3rem 0.45rem;
     font-size: 0.6rem;
   }
+}
+
+/* --- DARK MODE OVERRIDES --- */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #080d18;
+  --color-surface: rgba(12, 19, 34, 0.82);
+  --color-surface-strong: #0f172a;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-text: #f8fafc;
+  --color-muted: #cbd5e1;
+  --color-accent: #0b5fff;
+  --color-accent-soft: rgba(11, 95, 255, 0.2);
+  --color-accent-strong: #a8c2ff;
+  --color-focus: #4c87ff;
+  
+  background:
+    radial-gradient(circle at top left, rgba(11, 95, 255, 0.12), transparent 34%),
+    radial-gradient(circle at 88% 8%, rgba(245, 158, 11, 0.08), transparent 24%),
+    linear-gradient(180deg, #0a101d 0%, var(--color-bg) 100%);
+}
+
+html[data-theme="dark"] .app-frame {
+  background: var(--color-surface);
+}
+
+html[data-theme="dark"] .header-logo .logo-bg { fill: #0f172a; }
+html[data-theme="dark"] .header-logo .logo-q { fill: #ffffff; }
+
+html[data-theme="dark"] .status-chip,
+html[data-theme="dark"] .theme-toggle,
+html[data-theme="dark"] .panel {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+html[data-theme="dark"] .panel-controls {
+  background: linear-gradient(180deg, rgba(18, 28, 47, 0.86) 0%, rgba(15, 23, 42, 0.92) 100%);
+}
+
+html[data-theme="dark"] .text-input,
+html[data-theme="dark"] .color-value {
+  background: rgba(11, 19, 34, 0.95);
+  border-color: rgba(43, 58, 82, 0.8);
+}
+
+html[data-theme="dark"] .text-input::placeholder {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .file-input,
+html[data-theme="dark"] .mock-control-large {
+  background: rgba(11, 19, 34, 0.9);
+  border-color: rgba(43, 58, 82, 0.8);
+}
+
+html[data-theme="dark"] .preview-card {
+  background: linear-gradient(180deg, rgba(16, 26, 43, 0.95), rgba(12, 19, 34, 0.94));
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .panel-preview {
+  background:
+    radial-gradient(circle at top, rgba(11, 95, 255, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(12, 21, 37, 0.96), rgba(8, 13, 24, 0.92));
+}
+
+html[data-theme="dark"] .action-button-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--color-text);
+}
+
+html[data-theme="dark"] .action-button-secondary:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+html[data-theme="dark"] .file-input::file-selector-button {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  border-color: rgba(11, 95, 255, 0.34);
+}
+
+html[data-theme="dark"] .preview-card-footer span {
+  opacity: 0.85;
 }
