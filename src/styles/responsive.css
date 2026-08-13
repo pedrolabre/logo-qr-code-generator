@@ -1,0 +1,181 @@
+@media (max-width: 960px) {
+  .app-frame {
+    min-height: auto;
+    max-height: none;
+  }
+
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .app-header h1 {
+    white-space: normal;
+    line-height: 1.08;
+  }
+
+  .status-row {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .layout-grid {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .form-panel,
+  .panel-preview {
+    overflow: visible;
+  }
+
+  .preview-stage,
+  .preview-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 0.35rem;
+  }
+
+  .app-frame {
+    padding: 0.45rem;
+    border-radius: 0;
+  }
+
+  .app-header h1 {
+    max-width: 100%;
+    font-size: clamp(1.1rem, 6vw, 1.55rem);
+  }
+
+  .status-chip {
+    flex: 1 1 8rem;
+    text-align: center;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .field-span-2 {
+    grid-column: span 1;
+  }
+
+  .color-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mock-control-row,
+  .preview-grid,
+  .preview-card-body {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-card {
+    width: 100%;
+  }
+
+  .preview-card-header,
+  .preview-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .preview-status-group {
+    justify-content: flex-start;
+  }
+
+  .actions-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .action-button {
+    width: 100%;
+    min-height: 2rem;
+    padding: 0.35rem 0.45rem;
+    font-size: 0.56rem;
+  }
+
+  .scannability-badge {
+    justify-content: center;
+    margin-left: 0;
+    min-height: 1.8rem;
+    grid-column: 1 / -1;
+  }
+
+  .preview-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ambient {
+    opacity: 0.45;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-shell {
+    padding: 0;
+  }
+
+  .app-frame,
+  .panel {
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .color-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-height: 820px) {
+  .app-frame {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .app-header {
+    margin-bottom: var(--space-1);
+  }
+
+  .layout-grid {
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+  }
+
+  .panel {
+    gap: var(--space-1);
+    padding: 0.5rem;
+  }
+
+  .preview-grid {
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+  }
+
+  .preview-text {
+    line-height: 1.15;
+  }
+
+  .preview-metrics {
+    display: none;
+  }
+
+  .status-row {
+    gap: 0.25rem;
+  }
+
+  .status-chip {
+    padding: 0.3rem 0.45rem;
+    font-size: 0.6rem;
+  }
+}
+
